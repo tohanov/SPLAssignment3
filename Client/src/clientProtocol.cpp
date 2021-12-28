@@ -3,12 +3,12 @@
 //
 
 #include "clientProtocol.h"
-
-    clientProtocol::clientProtocol() {
-            shouldTErminate=false;
-    }
-
-    void clientProtocol::process(T message){
+   
+    template <typename T>
+    clientProtocol<T>::clientProtocol():shouldTerminate(false){}
+        
+    template <typename T>
+    void clientProtocol<T>::process(T message){
         short opCode = getOpCode(message);
 
         switch(opCode){
@@ -22,9 +22,11 @@
 
     }
 
-    short clientProtocol::getOpCode(T message){
+    
+    template <typename T>
+    short clientProtocol<T>::getOpCode(T message){
     return;
-}
+    }
 
 
 

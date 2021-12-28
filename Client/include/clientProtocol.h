@@ -5,17 +5,17 @@
 #ifndef SPLASSIGNMENT3_CLIENTPROTOCOL_H
 #define SPLASSIGNMENT3_CLIENTPROTOCOL_H
 
-
-class clientProtocol<T> {
+template <typename T>
+class clientProtocol{
 
 private:
-    boolean shouldTerminate;
+    bool shouldTerminate;
 public:
 
     clientProtocol(){}
 
     void process(T message);
-    boolean shouldTerminate();
+    bool shouldTerminate();
     short getOpCode(T message);
 
 
