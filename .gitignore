@@ -1,4 +1,8 @@
 *
 
 !.gitignore
+!Client
+!Client/**
+!Server
+!Server/**
 
