@@ -2,10 +2,13 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
+import main.java.bgu.spl.net.application.UserSession;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -15,7 +18,8 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<MessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
-    private ConcurrentHashMap<String,Integer> userIdHashmap;    //TODO:check if concurrent necessary
+    private ConcurrentHashMap<String,UserSession> userToIdHashmap;    //TODO:check if concurrent necessary
+    
 
     public BaseServer(
             int port,
@@ -26,7 +30,9 @@ public abstract class BaseServer<T> implements Server<T> {
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
 		this.sock = null;
-        userIdHashmap=new ConcurrentHashMap<>();        
+
+        userToIdHashmap=new ConcurrentHashMap<>(); 
+           
 
     }
 

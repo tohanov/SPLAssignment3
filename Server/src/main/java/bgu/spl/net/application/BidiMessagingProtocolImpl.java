@@ -1,9 +1,10 @@
 import java.util.concurrent.ConcurrentHashMap;
 
+import Messages.Message;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 
-public class BidiMessagingProtocolImpl implements BidiMessagingProtocol {
+public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
 
     private Connections connections;
     private ConcurrentHashMap<String,Integer> userToIdHashmap;
@@ -24,7 +25,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol {
     }
 
     @Override
-    public void process(Object message) {
+    public void process(Message message) {
         // TODO Auto-generated method stub
         
     }

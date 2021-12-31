@@ -1,8 +1,14 @@
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import Messages.LogoutMessage;
+import Messages.LogstatMessage;
 import Messages.Message;
+import Messages.RegisterMessage;
+import bgu.spl.net.api.MessageEncoderDecoder;
 
-public class BidiMessageEncoderDecoderImpl implements BidiEncoderDecoder<Message>{
+
+public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>{
 
     private byte[] bytes= new byte[1 << 10];
     private int len;
@@ -35,47 +41,45 @@ public class BidiMessageEncoderDecoderImpl implements BidiEncoderDecoder<Message
         int opCode= getOpCode(bytes);
 
         switch (opCode) {
-            case 1:
+            case 1: // register
+                return createRegisterMessage();
                 
-                break;
         
-            case 2:
+            case 2: // login
                 
                 break;
 
-                case 3:
+            case 3: // logout
+                return new LogoutMessage();
+                
+            case 4: // follow/unollow
                 
                 break;
 
-                case 4:
+            case 5:
                 
                 break;
 
-                case 5:
+            case 6:
                 
                 break;
 
-                case 6:
+            case 7: //logstat
+                return new LogstatMessage();
+                
+            case 8:
                 
                 break;
 
-                case 7:
+            case 9:
                 
                 break;
 
-                case 8:
+            case 10:
                 
                 break;
 
-                case 9:
-                
-                break;
-
-                case 10:
-                
-                break;
-
-                case 11:
+            case 11:
                 
                 break;
 
@@ -113,7 +117,16 @@ public class BidiMessageEncoderDecoderImpl implements BidiEncoderDecoder<Message
     return result;
 
     }
-    
+    //-----------------------------------------
+
+    private Message createRegisterMessage() {
+        String[] result = (new String(bytes, 2, len, StandardCharsets.UTF_8)).split("\0");  //2 is offset in order to remove the opCode
+        len=0;
+               
+        return new RegisterMessage(result[0], result[1], result[2]);
+
+    }
+
 }
 
 
