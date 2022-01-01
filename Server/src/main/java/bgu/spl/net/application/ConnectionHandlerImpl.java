@@ -1,3 +1,5 @@
+package bgu.spl.net.application;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -5,7 +7,7 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
-import bgu.spl.net.srv.bidi.ConnectionHandler;
+
 
 
 public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
@@ -13,9 +15,10 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
     private Socket socket;
     private BufferedInputStream in;
     private BufferedOutputStream out;
+    private UserSession userSession;
     
     BidiMessagingProtocol<T> protocol;
-    BidiEncoderDecoder<T> encDec;
+    BidiMessageEncoderDecoderImpl encDec;
 
     public ConnectionHandlerImpl(Socket socket, BidiMessagingProtocol<T> protocol, BidiEncoderDecoder<T> encDec){
 
@@ -29,6 +32,7 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
             e.printStackTrace();
         }
            
+        userSession=null;
 
 
     }
@@ -74,6 +78,13 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
             e.printStackTrace();
         }
         
+    }
+
+    public UserSession getSession(){
+        return userSession;
+    }
+    public void setUserSession(UserSession newUserSession){
+        userSession=newUserSession;
     }
     
 }

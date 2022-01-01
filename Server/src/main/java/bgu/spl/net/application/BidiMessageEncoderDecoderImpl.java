@@ -1,5 +1,7 @@
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import Messages.LogoutMessage;
 import Messages.LogstatMessage;
@@ -53,37 +55,36 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
                 return new LogoutMessage();
                 
             case 4: // follow/unollow
+                return createFollowUnfollowMessage();
                 
-                break;
 
-            case 5:
-                
-                break;
+            case 5: // post
+                return new createPostMessage();             
 
-            case 6:
+            case 6: // private message
                 
                 break;
 
             case 7: //logstat
                 return new LogstatMessage();
                 
-            case 8:
+            case 8: //stat
                 
                 break;
 
-            case 9:
+            case 9: //notification
                 
                 break;
 
-            case 10:
+            case 10: //Ack   
                 
                 break;
 
-            case 11:
+            case 11:  //Error
                 
                 break;
 
-            case 12:
+            case 12:  //block
                 
                 break;
 
@@ -120,13 +121,39 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     //-----------------------------------------
 
     private Message createRegisterMessage() {
-        String[] result = (new String(bytes, 2, len, StandardCharsets.UTF_8)).split("\0");  //2 is offset in order to remove the opCode
+        String[] result = (new String(bytes, 2, len-2, StandardCharsets.UTF_8)).split("\0");  //2 is offset in order to remove the opCode
         len=0;
                
         return new RegisterMessage(result[0], result[1], result[2]);
 
     }
 
+    private Message createFollowUnfollowMessage(){
+        String username = new String(bytes, 3 , len-3, StandardCharsets.UTF_8);
+        len=0;
+
+        if(bytes[2]==0)
+            return new FollowMessage(username);
+        
+        else return new UnfollowMessage(username);
+
+    }
+
+    public Message createPostMessage(){
+        String messageToPost = new String(bytes, 2 , len-2, StandardCharsets.UTF_8);
+        len=0;
+
+        ArrayList<String> targetUsers=new ArrayList<>();
+
+        String[] words=messageToPost.split(" ");
+        for (String word : words) {
+            if(word.length()>1 && word.charAt(0)=='@') // hashtag and username
+                targetUsers.add(word.substring(1));
+            
+        }
+
+        return new PostMessage(messageToPost,targetUsers);
+    }
 }
 
 

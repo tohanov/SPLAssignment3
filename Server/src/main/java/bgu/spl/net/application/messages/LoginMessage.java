@@ -1,10 +1,10 @@
-package main.java.bgu.spl.net.application.messages;
+package bgu.spl.net.application.messages;
 
-import main.java.bgu.spl.net.application.messages.Message;
 import java.sql.Connection;
 import java.util.HashMap;
 
-import main.java.bgu.spl.net.application.UserInfo;
+import bgu.spl.net.application.UserSession;
+import messages.Message;
 
 public class LoginMessage extends Message {
 
@@ -18,15 +18,16 @@ public class LoginMessage extends Message {
     }
 
     @Override
-    public Message act(Connection connection, HashMap<UserInfo, Integer> userToIdHashMap) {
-        Integer connectionId=userToIdHashMap.get(new UserInfo(username, password)); 
+    public Message act(Integer connectionId, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
+        //synchronized(usersession.getreceivedMessages???)
+        UserSession currentUserSession=usernameToUserSession.get(username);
 
-        if(connectionId==null || connectionId==-1)
+        if(currentUserSession==null|| !password.equals(currentUserSession.getPassword()) || currentUserSession.setSessionId( connectionId ))
             return new ErrorMessage();
 
-        if(password=)   //TODO: check password
-
-        //TODO: update connectionId in a concurrent way
+            
+        return new AckMessage();
+        // TODO: check for waiting messages from when was logged off
     }
 
     

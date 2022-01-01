@@ -7,7 +7,7 @@ import bgu.spl.net.srv.bidi.ConnectionHandler;
 
 public class ConnectionsImpl<T> implements Connections<T>{
 
-    private ConcurrentHashMap<Integer,ConnectionHandler> connectionsMap;
+    private ConcurrentHashMap<Integer,bgu.spl.net.srv.ConnectionHandler<T>> connectionsMap;
     private AtomicInteger currentId;
 
     public ConnectionsImpl(){
@@ -62,6 +62,10 @@ public class ConnectionsImpl<T> implements Connections<T>{
 
         return idToAdd;
 
+    }
+
+    public bgu.spl.net.srv.ConnectionHandler<T> getHandler(Integer connectionId){
+        return connectionsMap.get(connectionId);
     }
     
 

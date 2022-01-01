@@ -2,7 +2,7 @@ package messages;
 
 import java.util.HashMap;
 
-import main.java.bgu.spl.net.application.UserSession;
+import bgu.spl.net.application.UserSession;
 
 public class RegisterMessage extends Message {
     
@@ -17,11 +17,10 @@ public class RegisterMessage extends Message {
         
     }
 
-    public Message act(Connection connection, HashMap<UserSession,Integer> userToIdHashMap){
+    public Message act(Connections connection, HashMap<String,UserSession> usernameToUserSessionHashMap){
 
-        Integer id=userToIdHashMap.putIfAbsent(new UserSession(username, password), -1);  // in case two clients try to register the same username at the same time 
-        
-        if(id!=null)
+        UserSession currentUserSession=usernameToUserSessionHashMap.putIfAbsent(username, new UserSession(username, password, birthday));
+        if(currentUserSession!=null)
             return new ErrorMessage();
 
 
