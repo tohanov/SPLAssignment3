@@ -1,18 +1,25 @@
+import java.util.HashMap;
+
 import bgu.spl.net.application.UserSession;
 
 public class UnfollowMessage {
     
-    private String username;
+    private String usernameToUnfollow;
+    private UserSession userSessionToUnfollow;
 
     public UnfollowMessage(String username){
-        this.username=username;
+        this.usernameToUnfollow=username;
+
     }
 
-    public Message act(UserSession currentUserSession, Connections connection, HashMap<String,UserSession> usernameToUserSession){
+    public ClientToServerMessage act(UserSession currentUserSession, Connections connection, HashMap<String,UserSession> usernameToUserSession){
 
-        if(!currentUserSession.isLoggedIn()||!currentUserSession.removeFollower(username))
+        userSessionToUnfollow=usernameToUserSession.get(usernameToUnfollow);
+
+        if(!currentUserSession.isLoggedIn() || userSessionToUnfollow==null || !userSessionToUnfollow.removeFollower(currentUserSession.getUsername()));
             return new ErrorMessage();
 
+        currentUserSession.decreaseFollowing();    
         return new AckMessage();    
 
     }

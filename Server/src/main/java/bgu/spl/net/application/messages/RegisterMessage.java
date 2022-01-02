@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import bgu.spl.net.application.UserSession;
 
-public class RegisterMessage extends Message {
+public class RegisterMessage extends ClientToServerMessage {
     
     private String username;
     private String password;
@@ -17,14 +17,14 @@ public class RegisterMessage extends Message {
         
     }
 
-    public Message act(Connections connection, HashMap<String,UserSession> usernameToUserSessionHashMap){
+    public ClientToServerMessage act(Connections connection, HashMap<String,UserSession> usernameToUserSessionHashMap){
 
         UserSession currentUserSession=usernameToUserSessionHashMap.putIfAbsent(username, new UserSession(username, password, birthday));
         if(currentUserSession!=null)
             return new ErrorMessage();
 
 
-        return new AckMessage();         
+        return new AckMessage(1);         
 
     }
 }

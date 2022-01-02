@@ -4,7 +4,7 @@ import Messages.Message;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 
-public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
+public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ClientToServerMessage> {
 
     private Connections connections;
     private ConcurrentHashMap<String,Integer> userToIdHashmap;
@@ -25,7 +25,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     }
 
     @Override
-    public void process(Message message) {
+    public void process(ClientToServerMessage message) {
         // TODO Auto-generated method stub
         
     }

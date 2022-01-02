@@ -4,21 +4,21 @@ import java.sql.Connection;
 import java.util.HashMap;
 
 import bgu.spl.net.application.UserSession;
-import messages.Message;
 
-public class LoginMessage extends Message {
+public class LoginMessage extends ClientToServerMessage {
 
     private String username;
     private String password;
    
     public LoginMessage(String username, String password, String birthday){
+        super(2);
         this.username=username;
         this.password=password;
               
     }
 
     @Override
-    public Message act(Integer connectionId, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
+    public ServerToClientMessage act(Integer connectionId, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
         //synchronized(usersession.getreceivedMessages???)
         UserSession currentUserSession=usernameToUserSession.get(username);
 
@@ -26,7 +26,7 @@ public class LoginMessage extends Message {
             return new ErrorMessage();
 
             
-        return new AckMessage();
+        return new AckMessage(2);
         // TODO: check for waiting messages from when was logged off
     }
 

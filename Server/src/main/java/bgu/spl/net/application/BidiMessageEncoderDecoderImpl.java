@@ -2,15 +2,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import Messages.LogoutMessage;
 import Messages.LogstatMessage;
 import Messages.Message;
 import Messages.RegisterMessage;
 import bgu.spl.net.api.MessageEncoderDecoder;
+import bgu.spl.net.application.messages.ClientToServerMessage;
+import bgu.spl.net.application.messages.ServerToClientMessage;
 
 
-public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>{
+public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<ClientToServerMessage>{
 
     private byte[] bytes= new byte[1 << 10];
     private int len;
@@ -22,7 +25,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     }
 
     @Override
-    public Message decodeNextByte(byte nextByte) {
+    public ClientToServerMessage decodeNextByte(byte nextByte) {
         if (nextByte == ';') {
             return returnCompleteMessage();
         }
@@ -33,12 +36,12 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     }
 
     @Override
-    public byte[] encode(Message message) {
+    public byte[] encode(ClientToServerMessage message) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    private Message returnCompleteMessage(){
+    private ClientToServerMessage returnCompleteMessage(){
 
         int opCode= getOpCode(bytes);
 
@@ -62,27 +65,13 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
                 return new createPostMessage();             
 
             case 6: // private message
-                
-                break;
+                return new createPM_Message();              
 
             case 7: //logstat
                 return new LogstatMessage();
                 
             case 8: //stat
-                
-                break;
-
-            case 9: //notification
-                
-                break;
-
-            case 10: //Ack   
-                
-                break;
-
-            case 11:  //Error
-                
-                break;
+               return createStatMessage()
 
             case 12:  //block
                 
@@ -120,7 +109,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     }
     //-----------------------------------------
 
-    private Message createRegisterMessage() {
+    private ClientToServerMessage createRegisterMessage() {
         String[] result = (new String(bytes, 2, len-2, StandardCharsets.UTF_8)).split("\0");  //2 is offset in order to remove the opCode
         len=0;
                
@@ -128,7 +117,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     }
 
-    private Message createFollowUnfollowMessage(){
+    private ClientToServerMessage createFollowUnfollowMessage(){
         String username = new String(bytes, 3 , len-3, StandardCharsets.UTF_8);
         len=0;
 
@@ -139,7 +128,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     }
 
-    public Message createPostMessage(){
+    public ClientToServerMessage createPostMessage(){
         String messageToPost = new String(bytes, 2 , len-2, StandardCharsets.UTF_8);
         len=0;
 
@@ -153,6 +142,25 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         }
 
         return new PostMessage(messageToPost,targetUsers);
+    }
+
+    public ClientToServerMessage createPM_Message(){
+        String messageToPost = new String(bytes, 2 , len-2, StandardCharsets.UTF_8);
+        len=0;
+
+        String[] messagByParts = messageToPost.split("\0");
+
+        return new PM_Message(messagByParts[0], messagByParts[1], messagByParts[2]);
+
+    }
+
+    public ClientToServerMessage createStatMessage(){
+        String usernamesString = new String(bytes, 2 , len-2, StandardCharsets.UTF_8);
+        len=0;
+        List<String> list = Arrays.asList(usernamesString.split("|"));
+
+        return new StatMessage((ArrayList<String>)list);
+
     }
 }
 
