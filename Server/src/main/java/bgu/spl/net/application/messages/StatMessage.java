@@ -12,31 +12,34 @@ public class StatMessage extends ClientToServerMessage {
     private ArrayList<String> users;
     
     public StatMessage(ArrayList<String> users) {
+        super(8);
         this.users = users;
     }
 
 
 
     @Override
-    public ClientToServerMessage act(UserSession currentUserSession, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
+    public ServerToClientMessage act(UserSession currentUserSession, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
         
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
-            return new ErrorMessage();
+            return error();
 
         ArrayList<UserStats> output = new ArrayList<>();
 
-        if (!usernameToUserSession.keySet().containsAll(users)) {
-            return new ErrorMessage();
+        if (!usernameToUserSession.keySet().containsAll(users)) {   //checks all users exist
+            return error();
         }
 
         for(String username: users){
+            
             UserSession userSession = usernameToUserSession.get(username);
             
-            output.add(new UserStats(userSession.getAge(), userSession.getNumOfPosts(), userSession.getNumOfFollwers(), userSession.getNumOfFollwing()));
+            if(!userSession.isBlockingOtherUser(currentUserSession.getUsername()))
+                 output.add(new UserStats(userSession.getAge(), userSession.getNumOfPosts(), userSession.getNumOfFollwers(), userSession.getNumOfFollwing()));
 
         }
 
-        return new StatAckMessage(output);
+        return ack(output);
     } 
 
 

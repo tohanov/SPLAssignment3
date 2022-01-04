@@ -18,16 +18,26 @@ public class LoginMessage extends ClientToServerMessage {
     }
 
     @Override
-    public ServerToClientMessage act(Integer connectionId, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
+    public ServerToClientMessage act(int connectionId, /* UserSession currentUserSession, */ Connections connections, HashMap<String, UserSession> usernameToUserSession) {
         //synchronized(usersession.getreceivedMessages???)
-        UserSession currentUserSession=usernameToUserSession.get(username);
 
-        if(currentUserSession==null|| !password.equals(currentUserSession.getPassword()) || currentUserSession.setSessionId( connectionId ))
-            return new ErrorMessage();
-
-            
-        return new AckMessage(2);
         // TODO: check for waiting messages from when was logged off
+
+        // if logged in then error
+        // if not registered then error
+        // if password is wrong then error
+        // else allow login
+            // set the connection id of the user session of the given username to the one of the connection handler
+            // 
+
+        UserSession userSession = usernameToUserSession.get(username);
+        if (userSession == null || !password.equals(userSession.getPassword()) || userSession.setSessionId( connectionId ) ) {
+            return error();
+        }
+
+        // connections.get(connectionId) //FIXME
+        
+        return ack();
     }
 
     

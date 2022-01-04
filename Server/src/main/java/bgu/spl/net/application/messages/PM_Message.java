@@ -15,6 +15,7 @@ public class PM_Message extends ClientToServerMessage {
     private HashSet<String> filteredWords;
 
     public PM_Message(String targetUser, String messageToPost, String dateAndTime){
+        super(6);
         this.messageToPost=messageToPost;
         this.targetUser=targetUser;
         this.dateAndTime=dateAndTime;
@@ -29,16 +30,16 @@ public class PM_Message extends ClientToServerMessage {
     public ServerToClientMessage act(UserSession currentUserSession, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
         
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
-            return new ErrorMessage();
+            return error();
 
         UserSession targetUserSession=usernameToUserSession.get(targetUser);
 
         if(targetUserSession==null || ! targetUserSession.isFollowedByThisUser(currentUserSession.getUsername()))
-            return new ErrorMessage();
+            return error();
         
         filterMessage();
 
-        NotificationMessage wrappedMessage = new NotificationMessage(messageToPost);
+        NotificationMessage wrappedMessage = new NotificationMessage(6,currentUserSession.getUsername(),messageToPost);
         Byte[] encodedMessage=EncDec.encode(wrappedMessage);
 
         if(targetUserSession.isLoggedIn())           //FIXME: concurrency: user logouts during sending
@@ -47,7 +48,7 @@ public class PM_Message extends ClientToServerMessage {
          targetUserSession.getReceivedMessages().add(encodedMessage);
         } 
         
-        return new AckMessage(6);
+        return ack();
                
         
     }

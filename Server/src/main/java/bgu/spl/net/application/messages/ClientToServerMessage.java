@@ -18,4 +18,12 @@ public abstract class ClientToServerMessage {
     protected ServerToClientMessage ack() {
         return new AckMessage(opCode);
     }
+
+    protected ServerToClientMessage ack(Object args) {
+        return new AckMessage(opCode,args);
+    }
+
+    protected ServerToClientMessage error() {
+        return error();
+    }
 }

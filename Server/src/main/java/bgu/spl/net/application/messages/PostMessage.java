@@ -13,27 +13,30 @@ public class PostMessage extends ClientToServerMessage{
     private Set<String> targetUsers;
 
     public PostMessage(String messageToPost, ArrayList<String> targetUsers){
+        super(5);
         this.messageToPost=messageToPost;
         this.targetUsers=new HashSet<String>(targetUsers);
     }
 
-    public ClientToServerMessage act(UserSession currentUserSession, Connections connections, HashMap<String,UserSession> usernameToUserSession){
+    public ServerToClientMessage act(UserSession currentUserSession, Connections connections, HashMap<String,UserSession> usernameToUserSession){
         if(currentUserSession==null /* || !currentUserSession.isLoggedIn() */)
-            return new ErrorMessage();
+            return error();
         
         else{
             
 
             targetUsers.addAll(currentUserSession.getFollowers());  //FIXME: check concurrency: user unfollows during the function
             targetUsers.remove(currentUserSession.getUsername());
+            targetUsers.removeAll(currentUserSession.getBlockedUsers());
 
-            NotificationMessage wrappedMessage = new NotificationMessage(messageToPost);
+            NotificationMessage wrappedMessage = new NotificationMessage(5,currentUserSession.getUsername(),messageToPost);
             Byte[] encodedMessage=EncDec.encode(wrappedMessage);
+            
             for (String username : targetUsers) {
                 
                 UserSession targetUserSession=usernameToUserSession.get(username);
 
-                if(targetUserSession != null){
+                if(targetUserSession != null && !targetUserSession.isBlockingOtherUser(currentUserSession.getUsername())){
 
                     targetUserSession.increaseNumOfPosts();
 
@@ -48,7 +51,7 @@ public class PostMessage extends ClientToServerMessage{
             }
             
             //FIXME: check if not sending message to self, check if blocked, archive the messages 
-            return new AckMessage(5);
+            return ack();
         }
 
     }

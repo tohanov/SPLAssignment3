@@ -2,6 +2,7 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
+import bgu.spl.net.application.ConnectionHandlerImpl;
 import bgu.spl.net.application.UserSession;
 
 import java.io.IOException;
@@ -18,8 +19,11 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<MessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
-    private ConcurrentHashMap<String,UserSession> usernameToUserSessionHashmap;    //TODO:check if concurrent necessary
-    
+    // private ConcurrentHashMap<String,UserSession> usernameToUserSessionHashmap;    //TODO:check if concurrent necessary
+
+    private ConnectionsImpl<ServerToClientMessage> connections = new ConnectionsImpl<>();
+    private HashMap<String,UserSession> usernameToUserSession = new HashMap<>();
+    private int id;
 
     public BaseServer(
             int port,
@@ -31,9 +35,7 @@ public abstract class BaseServer<T> implements Server<T> {
         this.encdecFactory = encdecFactory;
 		this.sock = null;
 
-        usernameToUserSessionHashmap=new ConcurrentHashMap<>(); 
-           
-
+        usernameToUserSessionHashmap=new ConcurrentHashMap<>();
     }
 
     @Override
@@ -48,10 +50,12 @@ public abstract class BaseServer<T> implements Server<T> {
 
                 Socket clientSock = serverSock.accept();
 
-                BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(
-                        clientSock,
-                        encdecFactory.get(),
-                        protocolFactory.get());
+                ConnectionHandler<T> handler = new ConnectionHandlerImpl<>(
+                    id++,
+                    connections,
+                    clientSock,
+                    encdecFactory.get(),
+                    protocolFactory.get());
 
                 execute(handler);
             }

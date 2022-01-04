@@ -9,31 +9,24 @@ public class BlockMessage implements ClientToServerMessage{
     private String usernameToBlock;
 
     public BlockMessage(String userToBlock) {
+        super(12);
         this.usernameToBlock = userToBlock;
     }
 
     @Override
     public ServerToClientMessage act(UserSession currentUserSession, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
-        //TODO: take in cosideration in follow and post and PM
-
+       
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
-            return new ErrorMessage();
+            return error();
 
         UserSession userToBlock=usernameToUserSession.get(userToBlock); 
         
         if(userToBlock==null || currentUserSession.isBlockingOtherUser(usernameToBlock))
-            return new ErrorMessage();
+            return error();
 
         currentUserSession.blockUser(userToBlock);
 
-        return new AckMessage(12); 
-
-        
-        
-
-
-
-
+        return ack();
        
     }
 

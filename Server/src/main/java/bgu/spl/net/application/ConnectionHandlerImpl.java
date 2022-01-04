@@ -11,19 +11,22 @@ import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 
 
 public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
-
+    private final BidiMessagingProtocol<T> protocol;
+    private final BidiMessageEncoderDecoderImpl encDec;
+    private final int id;
     private Socket socket;
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private UserSession userSession;
     
-    BidiMessagingProtocol<T> protocol;
-    BidiMessageEncoderDecoderImpl encDec;
+   
 
-    public ConnectionHandlerImpl(Socket socket, BidiMessagingProtocol<T> protocol, BidiEncoderDecoder<T> encDec){
-
+    public ConnectionHandlerImpl(int _id, Connections connections, HashMap<String,UserSession> usernameToSession, Socket socket, BidiMessagingProtocol<T> protocol, BidiEncoderDecoder<T> encDec){
+        id = _id;
         this.socket=socket;
         this.protocol=protocol;
+        this.protocol.start(id, connections);
+        
         this.encDec=encDec;   
         try {
             in=new BufferedInputStream(socket.getInputStream());
@@ -33,8 +36,6 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
         }
            
         userSession=null;
-
-
     }
 
     @Override

@@ -1,18 +1,20 @@
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import Messages.Message;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
+import bgu.spl.net.application.UserSession;
+import bgu.spl.net.application.messages.ClientToServerMessage;
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ClientToServerMessage> {
 
     private Connections connections;
-    private ConcurrentHashMap<String,Integer> userToIdHashmap;
+    private HashMap<String,UserSession> usernameToUserSession;
     private boolean shouldTerminate;
     
-    public BidiMessagingProtocolImpl(Connections connections, ConcurrentHashMap<String,Integer> userToIdHashmap){
-        this.connections=connections;
-        this.userToIdHashmap=userToIdHashmap;
+    public BidiMessagingProtocolImpl(ConcurrentHashMap<String,Integer> usernameToUserSession){
+        this.usernameToUserSession=usernameToUserSession;
         shouldTerminate=false;
 
     }
@@ -20,13 +22,13 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ClientTo
 
     @Override
     public void start(int connectionId, Connections connections) {
-        // TODO Auto-generated method stub
-        
+        this.connections=connections;
+        connections.addHandler(id, this);
     }
 
     @Override
     public void process(ClientToServerMessage message) {
-        // TODO Auto-generated method stub
+        message.act(currentUserSession, connections, usernameToUserSession);
         
     }
 

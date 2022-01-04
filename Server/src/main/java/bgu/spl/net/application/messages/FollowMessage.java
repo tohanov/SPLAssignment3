@@ -15,15 +15,16 @@ public class FollowMessage extends ClientToServerMessage {
         this.usernameToFollow=usernameTOFollow;
     }
 
-    public ClientToServerMessage act(UserSession currentUserSession, Connections connection, HashMap<String,UserSession> usernameToUserSession){
+    public ServerToClientMessage act(UserSession currentUserSession, Connections connection, HashMap<String,UserSession> usernameToUserSession){
 
         userSessionToFollow=usernameToUserSession.get(usernameToFollow);
 
-        if(!currentUserSession.isLoggedIn() || userSessionToFollow==null || !userSessionToFollow.addfollower(currentUserSession.getUsername()))
-            return new ErrorMessage();
+        if(!currentUserSession.isLoggedIn() || userSessionToFollow==null ||
+            userSessionToFollow.isBlockingOtherUser(currentUserSession.getUsername()) ||!userSessionToFollow.addfollower(currentUserSession))
+                return error();
 
         currentUserSession.increaseFollowing();    
-        return new AckMessage();    //TODO:fix
+        return ack(usernameToFollow);    //TODO:fix
 
     }
 

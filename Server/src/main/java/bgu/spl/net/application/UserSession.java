@@ -142,6 +142,10 @@ public class UserSession {
         return blockedUsers.contains(otherUser);
     }
 
+    public HashSet<String> getBlockedUsers(){
+        return blockedUsers;
+    }
+
     public ConcurrentLinkedDeque<Byte[]> getReceivedMessages(){
         return receivedMessages;
 
