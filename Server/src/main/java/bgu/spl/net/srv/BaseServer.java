@@ -1,41 +1,37 @@
 package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
-import bgu.spl.net.api.MessagingProtocol;
-import bgu.spl.net.application.ConnectionHandlerImpl;
-import bgu.spl.net.application.UserSession;
-
+import bgu.spl.net.bidi.BidiMessagingProtocol;
+import bgu.spl.net.bidi.ConnectionHandler;
+import bgu.spl.net.bidi.Connections;
+import bgu.spl.net.impl.ConnectionHandlerImpl;
+import bgu.spl.net.impl.ConnectionsImpl;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+
 import java.util.function.Supplier;
+
 
 public abstract class BaseServer<T> implements Server<T> {
 
     private final int port;
-    private final Supplier<MessagingProtocol<T>> protocolFactory;
+    private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
-    private ServerSocket sock;
-    // private ConcurrentHashMap<String,UserSession> usernameToUserSessionHashmap;    //TODO:check if concurrent necessary
 
-    private ConnectionsImpl<ServerToClientMessage> connections = new ConnectionsImpl<>();
-    private HashMap<String,UserSession> usernameToUserSession = new HashMap<>();
+    private Connections<T> connections = new ConnectionsImpl<>();
     private int id;
+    private ServerSocket sock;
 
     public BaseServer(
             int port,
-            Supplier<MessagingProtocol<T>> protocolFactory,
-            Supplier<MessageEncoderDecoder<T>> encdecFactory) {
+            Supplier<BidiMessagingProtocol<T>> protocolFactory,
+            Supplier<MessageEncoderDecoder<T>> encdecFactory){
 
         this.port = port;
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
 		this.sock = null;
-
-        usernameToUserSessionHashmap=new ConcurrentHashMap<>();
     }
 
     @Override
@@ -49,13 +45,16 @@ public abstract class BaseServer<T> implements Server<T> {
             while (!Thread.currentThread().isInterrupted()) {
 
                 Socket clientSock = serverSock.accept();
-
-                ConnectionHandler<T> handler = new ConnectionHandlerImpl<>(
-                    id++,
+                BidiMessagingProtocol<T> tempProtocol = protocolFactory.get();
+                ConnectionHandler<T> handler = new ConnectionHandlerImpl<T>(
+                    id,
                     connections,
                     clientSock,
-                    encdecFactory.get(),
-                    protocolFactory.get());
+                    tempProtocol,
+                    encdecFactory.get()
+                    );
+                tempProtocol.setHandler(handler);
+                tempProtocol.start(id, connections);
 
                 execute(handler);
             }
@@ -71,6 +70,6 @@ public abstract class BaseServer<T> implements Server<T> {
 			sock.close();
     }
 
-    protected abstract void execute(BlockingConnectionHandler<T>  handler);
+    protected abstract void execute(ConnectionHandler<T>  handler);
 
 }
