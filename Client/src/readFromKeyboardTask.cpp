@@ -13,7 +13,7 @@ public:
     }
 
     void operator()() {
-        while (1) {
+        while (1) { // TODO: check if shouldTerminate via the connection handler?
             const short bufsize = 1024;
             char buf[bufsize];
             std::cin.getline(buf, bufsize);
