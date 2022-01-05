@@ -1,9 +1,8 @@
 package bgu.spl.net.impl.messages;
 
-import java.util.HashMap;
-
+import java.util.concurrent.ConcurrentHashMap;
+import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
-import bgu.spl.net.impl.messages.AckMessage;
 
 public class LogoutMessage extends ClientToServerMessage {
 
@@ -12,13 +11,14 @@ public class LogoutMessage extends ClientToServerMessage {
     }
 
     @Override
-    public ServerToClientMessage act(Integer id, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
         //TODO: Please notice that LOGOUT message closes the client's program.
-        UserSession currentnUserSession = connections.getHandler(id).getUserSession();
+        UserSession currentnUserSession = connections.getHandler(currentUserId).getUserSession();
+
         if(currentnUserSession==null)
             return error();
 
-        connections.getHandler(id).setUserSession(null);
+        connections.getHandler(currentUserId).setUserSession(null);
         currentnUserSession.resetSessionId();
         return ack();
 

@@ -50,8 +50,8 @@ public class ConnectionsImpl<T> implements Connections<T>{
         connectionsMap.put(id, conHandler);
     }
 
-    public ConnectionHandler<T> getHandler(Integer connectionId){
-        return connectionsMap.get(connectionId);
+    public ConnectionHandlerImpl<T> getHandler(Integer connectionId){
+        return (ConnectionHandlerImpl<T>) connectionsMap.get(connectionId);
     }
     
 

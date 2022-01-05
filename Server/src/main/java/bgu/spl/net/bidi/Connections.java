@@ -1,5 +1,7 @@
 package bgu.spl.net.bidi;
 
+import bgu.spl.net.impl.ConnectionHandlerImpl;
+
 public interface Connections<T> {
 
     boolean send(int connectionId, T msg);
@@ -8,5 +10,5 @@ public interface Connections<T> {
 
     void disconnect(int connectionId);
 
-    ConnectionHandler<T> getHandler(Integer sessionId);
+    ConnectionHandlerImpl<T> getHandler(Integer sessionId);
 }

@@ -1,7 +1,6 @@
 package bgu.spl.net.impl.messages;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +19,10 @@ public class PostMessage extends ClientToServerMessage{
         this.targetUsers=new HashSet<String>(targetUsers);
     }
 
-    public ServerToClientMessage act(UserSession currentUserSession, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
+
+        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+
         if(currentUserSession==null /* || !currentUserSession.isLoggedIn() */)
             return error();
         

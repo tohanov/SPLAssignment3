@@ -1,5 +1,4 @@
 package bgu.spl.net.impl.messages;
-import bgu.spl.net.impl.messages.ServerToClientMessage;
 
 public class NotificationMessage extends ServerToClientMessage {
 

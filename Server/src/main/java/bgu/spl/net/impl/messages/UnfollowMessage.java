@@ -1,8 +1,8 @@
 package bgu.spl.net.impl.messages;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
+import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
-import bgu.spl.net.impl.messages.ClientToServerMessage;
 
 public class UnfollowMessage extends ClientToServerMessage{
     
@@ -15,14 +15,15 @@ public class UnfollowMessage extends ClientToServerMessage{
 
     }
 
-    public ServerToClientMessage act(UserSession currentUserSession, Connections connection, HashMap<String,UserSession> usernameToUserSession){
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
 
+        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
         userSessionToUnfollow=usernameToUserSession.get(usernameToUnfollow);
 
-        if(!currentUserSession.isLoggedIn() || userSessionToUnfollow==null || !userSessionToUnfollow.removeFollower(currentUserSession.getUsername()));
+        if(!currentUserSession.isLoggedIn() || userSessionToUnfollow==null || !userSessionToUnfollow.removeFollower(currentUserSession))
             return error();
 
-        currentUserSession.decreaseFollowing();    
+        //currentUserSession.decreaseFollowing();    
         return ack(); 
 
     }

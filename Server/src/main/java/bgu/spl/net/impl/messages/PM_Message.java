@@ -1,13 +1,10 @@
 package bgu.spl.net.impl.messages;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
-import bgu.spl.net.impl.messages.ClientToServerMessage;
-import bgu.spl.net.impl.messages.ErrorMessage;
-import bgu.spl.net.impl.messages.ServerToClientMessage;
+
 
 public class PM_Message extends ClientToServerMessage {
     private String messageToPost;
@@ -25,15 +22,14 @@ public class PM_Message extends ClientToServerMessage {
         filteredWords=new HashSet<>();
         filteredWords.add("war");
         filteredWords.add("kill");
-        
-
-        
 
     }
 
     @Override
-    public ServerToClientMessage act(UserSession currentUserSession, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
         
+        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
             return error();
 

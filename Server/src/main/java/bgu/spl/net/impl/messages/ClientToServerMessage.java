@@ -1,8 +1,6 @@
 package bgu.spl.net.impl.messages;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
 

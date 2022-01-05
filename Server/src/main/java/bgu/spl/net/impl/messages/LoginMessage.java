@@ -1,7 +1,5 @@
 package bgu.spl.net.impl.messages;
 
-import java.sql.Connection;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;

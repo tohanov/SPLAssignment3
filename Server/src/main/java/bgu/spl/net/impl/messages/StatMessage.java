@@ -1,11 +1,8 @@
 package bgu.spl.net.impl.messages;
 import java.util.ArrayList;
-import java.util.HashMap;
-
+import java.util.concurrent.ConcurrentHashMap;
+import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
-import bgu.spl.net.impl.messages.ClientToServerMessage;
-import bgu.spl.net.impl.messages.Connections;
-import bgu.spl.net.impl.messages.ErrorMessage;
 import bgu.spl.net.impl.messages.LogstatMessage.UserStats;
 
 public class StatMessage extends ClientToServerMessage {
@@ -17,11 +14,11 @@ public class StatMessage extends ClientToServerMessage {
         this.users = users;
     }
 
-
-
     @Override
-    public ServerToClientMessage act(UserSession currentUserSession, Connections connections, HashMap<String, UserSession> usernameToUserSession) {
-        
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
+
+        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
             return error();
 
@@ -35,8 +32,9 @@ public class StatMessage extends ClientToServerMessage {
             
             UserSession userSession = usernameToUserSession.get(username);
             
-            if(!userSession.isBlockingOtherUser(currentUserSession.getUsername()))
-                 output.add(new UserStats(userSession.getAge(), userSession.getNumOfPosts(), userSession.getNumOfFollwers(), userSession.getNumOfFollwing()));
+            if(!userSession.isBlockingOtherUser(currentUserSession.getUsername())){
+                output.add(new UserStats(userSession.getAge(), userSession.getNumOfPosts(), userSession.getNumOfFollwers(), userSession.getNumOfFollwing()));
+            }
 
         }
 

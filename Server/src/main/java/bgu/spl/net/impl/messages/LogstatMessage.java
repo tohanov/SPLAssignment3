@@ -1,10 +1,6 @@
 package bgu.spl.net.impl.messages;
 
-import java.text.DateFormat;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
@@ -51,8 +47,10 @@ public class LogstatMessage extends ClientToServerMessage {
     }
 
     @Override
-    public ServerToClientMessage act(UserSession currentUserSession, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
-        
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
+
+        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
             return error();
 

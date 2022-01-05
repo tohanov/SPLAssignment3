@@ -1,9 +1,5 @@
 package bgu.spl.net.impl.messages;
 
-import java.util.ArrayList;
-
-import bgu.spl.net.impl.messages.LogstatMessage.UserStats;
-
 public class AckMessage extends ServerToClientMessage{
 
     Object information;

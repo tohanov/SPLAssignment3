@@ -1,7 +1,7 @@
 package bgu.spl.net.impl.messages;
 
-import java.util.HashMap;
-
+import java.util.concurrent.ConcurrentHashMap;
+import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
 
 public class RegisterMessage extends ClientToServerMessage {
@@ -18,7 +18,7 @@ public class RegisterMessage extends ClientToServerMessage {
         
     }
 
-    public ServerToClientMessage act(Connections connection, HashMap<String,UserSession> usernameToUserSessionHashMap){
+    public ServerToClientMessage act(int currentUserId, Connections<Message> connection, ConcurrentHashMap<String,UserSession> usernameToUserSessionHashMap){
 
         UserSession currentUserSession=usernameToUserSessionHashMap.putIfAbsent(username, new UserSession(username, password, birthday));
         if(currentUserSession!=null)
