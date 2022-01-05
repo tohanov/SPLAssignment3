@@ -7,14 +7,12 @@ import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
 
 public class LogstatMessage extends ClientToServerMessage {
-
-    
-    
+     
     public LogstatMessage() {
         super(7);
     }
 
-    public class UserStats {
+    public static class UserStats {
         private int age;
         private int numberOfPosts;
         private int numberOfFollowers;

@@ -7,7 +7,6 @@ import bgu.spl.net.impl.UserSession;
 public class UnfollowMessage extends ClientToServerMessage{
     
     private String usernameToUnfollow;
-    private UserSession userSessionToUnfollow;
 
     public UnfollowMessage(String username){
         super(4);
@@ -18,7 +17,7 @@ public class UnfollowMessage extends ClientToServerMessage{
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
 
         UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
-        userSessionToUnfollow=usernameToUserSession.get(usernameToUnfollow);
+        UserSession userSessionToUnfollow=usernameToUserSession.get(usernameToUnfollow);
 
         if(!currentUserSession.isLoggedIn() || userSessionToUnfollow==null || !userSessionToUnfollow.removeFollower(currentUserSession))
             return error();
