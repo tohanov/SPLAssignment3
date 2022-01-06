@@ -69,7 +69,21 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 }
  
 bool ConnectionHandler::getLine(std::string& line) {
-    return getFrameAscii(line, '\n');
+    // return getFrameAscii(line, '\n');
+    string s="";
+    char ch;
+    try {
+		do{
+			getBytes(&ch, 1);
+            s = encDec.decodeNextByte(ch);
+        }while (s == "");
+    } catch (std::exception& e) {
+        std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+        return false;
+    }
+    line = s;
+
+    return true;
 }
 
 bool ConnectionHandler::sendLine(std::string& line) {

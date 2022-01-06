@@ -9,7 +9,7 @@ template <typename T>
 class clientProtocol{
 
 private:
-    bool shouldTerminate;
+    bool should_terminate;
 public:
 
     clientProtocol(){}

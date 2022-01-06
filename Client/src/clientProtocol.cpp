@@ -5,7 +5,7 @@
 #include "clientProtocol.h"
 
 template <typename T>
-clientProtocol<T>::clientProtocol():shouldTerminate(false){}
+clientProtocol<T>::clientProtocol():should_terminate(false){}
     
 template <typename T>
 void clientProtocol<T>::process(T message){
