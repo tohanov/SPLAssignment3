@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <connectionHandler.h>  
+#include <clientConnectionHandler.h>  
 #include <thread>
 #include "readFromKeyboardTask.cpp"
 #include "readFromSocketTask.cpp"
@@ -14,14 +14,14 @@ int main (int argc, char *argv[]) {
     std::string host = argv[1];
     short port = atoi(argv[2]);
 
-    newConnectionHandler connectionHandler(host, port);
+    connectionHandler connectionHandler(host, port);
 
     if (!connectionHandler.connect()) {
         std::cerr << "Cannot connect to " << host << ":" << port << std::endl;
         return 1;
     }
     
-    readFromKeyBoardTask task1(connectionHandler);
+    readFromKeyboardTask task1(connectionHandler);
     readFromSocketTask task2(connectionHandler);
 
     std::thread th1(std::ref(task1));

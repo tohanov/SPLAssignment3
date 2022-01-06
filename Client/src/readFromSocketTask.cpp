@@ -1,15 +1,15 @@
 //
 // Created by USER on 28/12/2021.
 //
-#include "connectionHandler.h"
+#include "clientConnectionHandler.h"
 
 class readFromSocketTask{
 
 private:
-    ConnectionHandler connectionHandler;
+    ConnectionHandler *ptr_connectionHandler;
 public:
-    readFromSocketTask(ConnectionHandler conHandler){
-        this->connectionHandler=connectionHandler;
+    readFromSocketTask(ConnectionHandler *_connectionHandler) {
+        ptr_connectionHandler = _connectionHandler;
     }
 
     void operator()(){
@@ -20,25 +20,25 @@ public:
         std::string answer;
         // Get back an answer: by using the expected number of bytes (len bytes + newline delimiter)
         // We could also use: connectionHandler.getline(answer) and then get the answer without the newline char at the end
-        if (!connectionHandler.getLine(answer)) {
+        if (!ptr_connectionHandler->getLine(answer)) {
             std::cout << "Disconnected. Exiting...\n" << std::endl;
-            break;
+            // break;
         }
 
-        len=answer.length();
+        int len=answer.length();
         // A C string must end with a 0 char delimiter.  When we filled the answer buffer from the socket
         // we filled up to the \n char - we must make sure now that a 0 char is also present. So we truncate last character.
         answer.resize(len-1);
         std::cout << "Reply: " << answer << " " << len << " bytes " << std::endl << std::endl;
         if (answer == "LOGOUT") {   //TODO: change format if needed
             std::cout << "Exiting...\n" << std::endl;
-            break;
+            // break;
         }
 
         //answer is valid
 
 
-    return 0;
+    // return 0;
 
 
     }

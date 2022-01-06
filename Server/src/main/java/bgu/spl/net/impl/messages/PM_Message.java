@@ -19,9 +19,9 @@ public class PM_Message extends ClientToServerMessage {
         this.targetUser=targetUser;
         this.dateAndTime=dateAndTime;
 
-        filteredWords=new HashSet<>();
-        filteredWords.add("war");
-        filteredWords.add("kill");
+        filteredWords=new HashSet<>(); //TODO:add words
+        // filteredWords.add("war");
+        // filteredWords.add("kill");
 
     }
 

@@ -10,7 +10,10 @@ using std::string;
  
 ConnectionHandler::ConnectionHandler(string host, short port): host_(host), port_(port), io_service_(), socket_(io_service_), encDec(){
 }
-    
+
+// ConnectionHandler::ConnectionHandler(ConnectionHandler &other) : socket_(other.socket_) {
+// }
+
 ConnectionHandler::~ConnectionHandler() {
     close();
 }
@@ -50,6 +53,7 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 
 bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
     int tmp = 0;
+    
 	boost::system::error_code error;
     try {
         while (!error && bytesToWrite > tmp ) {
@@ -70,7 +74,9 @@ bool ConnectionHandler::getLine(std::string& line) {
 
 bool ConnectionHandler::sendLine(std::string& line) {
     char *ptr_Bytes = encDec.encode(line);
-    bool connectionClosed = sendBytes(ptr_Bytes, '\n');
+    int len = strchr(ptr_Bytes,';') - ptr_Bytes + 1;
+
+    bool connectionClosed = sendBytes(ptr_Bytes, len);
 
     delete ptr_Bytes;
     return connectionClosed;

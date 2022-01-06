@@ -17,6 +17,8 @@ private:
     clientEncoderDecoder<string> encDec;
  
 public:
+    // ConnectionHandler(ConnectionHandler &other);
+
     ConnectionHandler(std::string host, short port);
     virtual ~ConnectionHandler();
  
