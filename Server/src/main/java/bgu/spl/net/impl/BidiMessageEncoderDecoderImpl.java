@@ -1,4 +1,5 @@
 package bgu.spl.net.impl;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -10,16 +11,18 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.impl.messages.*;
 import bgu.spl.net.impl.messages.LogstatMessage.UserStats;
 
-public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>{
 
+public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>{
     private byte[] bytes= new byte[1 << 10];
     private int len;
+
 
     public BidiMessageEncoderDecoderImpl(){
 
         bytes= new byte[1 << 10];
         len=0;
     }
+
 
     @Override
     public Message decodeNextByte(byte nextByte) {
@@ -29,8 +32,8 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
         pushByte(nextByte);
         return null; //not a line yet
-        
     }
+
 
     @Override
     public byte[] encode(Message message) {
@@ -46,11 +49,10 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
         else{ //opCode==11
             return encodeError(message);
-        } 
-
-        
+        }
     }
     
+
     private ClientToServerMessage returnCompleteMessage(){
 
         int opCode= getOpCode(bytes);
@@ -85,18 +87,12 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
             case 12:  //block
                 return createBlockMessage();  
-                
-
-                
-
-            
-            default:
+				
+			default:
                 return null;
         }
-
-
-
     }
+
     
     private void pushByte(byte nextByte) {
         if (len >= bytes.length) {
@@ -106,16 +102,13 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         bytes[len++] = nextByte;
     }
 
-    public static short getOpCode(byte[] byteArr)
 
-    {
+    public static short getOpCode(byte[] byteArr) {
+		short result = (short)((byteArr[0] & 0xff) << 8);
 
-    short result = (short)((byteArr[0] & 0xff) << 8);
+		result += (short)(byteArr[1] & 0xff);
 
-    result += (short)(byteArr[1] & 0xff);
-
-    return result;
-
+		return result;
     }
     //-----------------------------------------
 
@@ -216,10 +209,9 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
         output[index++] = 0;
 
-        return output;               
-
-
+        return output;
     }
+
 
     @SuppressWarnings("unchecked")
     private byte[] encodeAck(Message message) {

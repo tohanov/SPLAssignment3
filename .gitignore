@@ -1,8 +1,15 @@
 *
 
+!.vscode/
+!.vscode/launch.json
 !.gitignore
+
+
 !Client
 !Client/**
+Client/bin/**
+
 !Server
 !Server/**
+Server/target/**
 

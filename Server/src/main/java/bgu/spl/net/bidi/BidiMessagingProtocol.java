@@ -13,7 +13,7 @@ public interface BidiMessagingProtocol<T>  {
      */
     boolean shouldTerminate();
 
-    void setHandler(ConnectionHandler<T> handler);
+    void setHandler(ConnectionHandler<T> handler); // FIXME: not in the original interface
 
     
 }

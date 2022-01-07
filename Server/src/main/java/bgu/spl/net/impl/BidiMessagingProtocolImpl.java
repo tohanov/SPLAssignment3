@@ -9,19 +9,18 @@ import bgu.spl.net.impl.messages.ServerToClientMessage;
 import bgu.spl.net.bidi.BidiMessagingProtocol;
 import bgu.spl.net.bidi.ConnectionHandler;
 
-public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
 
+public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
     private ConnectionsImpl<Message> connections;
     private ConcurrentHashMap<String,UserSession> usernameToUserSession;
     private boolean shouldTerminate;
     private ConnectionHandlerImpl<Message> handler;
     private int id;
 
+
     public BidiMessagingProtocolImpl(ConcurrentHashMap<String,UserSession> usernameToUserSession){
         this.usernameToUserSession=usernameToUserSession;
         shouldTerminate=false;
-        
-
     }
 
 

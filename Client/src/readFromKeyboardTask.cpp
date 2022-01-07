@@ -1,49 +1,41 @@
-//
-// Created by USER on 28/12/2021.
-//
 #include "clientConnectionHandler.h"
 
+
 class readFromKeyboardTask{
+	private:
+		ConnectionHandler *ptr_connectionHandler;
+		
+	public:
+		readFromKeyboardTask(ConnectionHandler *_ptr_connectionHandler) : ptr_connectionHandler(_ptr_connectionHandler) {
+		}
 
-private:
-    ConnectionHandler *ptr_connectionHandler;
-public:
+		virtual ~readFromKeyboardTask() {
+		}
+		
 
-    readFromKeyboardTask(ConnectionHandler *_connectionHandler) {
-        ptr_connectionHandler = _connectionHandler;
-    }
-    
+		void operator()() { // FIXME : make a normal function to get rid of compilation errors
+			string line;
+			
+			while (1) { // TODO: check if shouldTerminate via the connection handler?
+				// const short bufsize = 1024;
+				// char buf[bufsize];
+				
+				// std::cin.getline(buf, bufsize);
+				// std::string line(buf);
 
-    void operator()() {
-        string line;
-        
-        while (1) { // TODO: check if shouldTerminate via the connection handler?
+				getline(cin, line);
 
-            // const short bufsize = 1024;
-            // char buf[bufsize];
-            
-            // std::cin.getline(buf, bufsize);
-            // std::string line(buf);
+				// int len = line.length();
 
-            getline(cin, line);
+				if (!ptr_connectionHandler->sendLine(line)) {
+					std::cout << "Disconnected. Exiting...\n" << std::endl;
+					break;
+				}
+				// connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
+				// std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
 
-            // int len = line.length();
-
-            if (!ptr_connectionHandler->sendLine(line)) {
-                std::cout << "Disconnected. Exiting...\n" << std::endl;
-                break;
-            }
-            // connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
-            // std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
-
-            if(line=="LOGOUT")
-                break;
-
-
-
-
-        }
-
-    }
-
+				if(line=="LOGOUT")
+					break;
+			}
+		}
 };

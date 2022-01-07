@@ -10,8 +10,7 @@ import bgu.spl.net.bidi.ConnectionHandler;
 import bgu.spl.net.bidi.Connections;
 
 
-
-public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
+public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable {
     private final BidiMessagingProtocol<T> protocol;
     private final MessageEncoderDecoder<T> encDec;
     private final int id;
@@ -19,8 +18,7 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>,Runnable{
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private UserSession userSession;
-    
-   
+
 
     public ConnectionHandlerImpl(int _id, 
             Connections<T> connections,

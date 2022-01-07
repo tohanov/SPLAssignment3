@@ -1,17 +1,16 @@
 #ifndef SPLASSIGNMENT3_CLIENTENCDEC_H
 #define SPLASSIGNMENT3_CLIENTENCDEC_H
 
+
 using namespace std;
 
 
-
-template <typename T>
-class clientEncoderDecoder{
-public:
-    T decodeNextByte(char nextByte);
-
-    char* encode(T message);
-
+template <typename T> class clientEncoderDecoder {
+	public:
+		clientEncoderDecoder();
+		
+		T decodeNextByte(char nextByte);
+		char* encode(T message);
 };
 
 

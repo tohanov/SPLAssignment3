@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 
 
 public abstract class BaseServer<T> implements Server<T> {
-
     private final int port;
     private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
@@ -23,6 +22,7 @@ public abstract class BaseServer<T> implements Server<T> {
     private int id;
     private ServerSocket sock;
 
+    
     public BaseServer(
             int port,
             Supplier<BidiMessagingProtocol<T>> protocolFactory,
@@ -34,6 +34,7 @@ public abstract class BaseServer<T> implements Server<T> {
 		this.sock = null;
     }
 
+
     @Override
     public void serve() {
 
@@ -43,17 +44,17 @@ public abstract class BaseServer<T> implements Server<T> {
             this.sock = serverSock; //just to be able to close
 
             while (!Thread.currentThread().isInterrupted()) {
-
                 Socket clientSock = serverSock.accept();
                 BidiMessagingProtocol<T> tempProtocol = protocolFactory.get();
-                ConnectionHandler<T> handler = new ConnectionHandlerImpl<T>(
+				ConnectionHandler<T> handler = new ConnectionHandlerImpl<T>(
                     id,
                     connections,
                     clientSock,
                     tempProtocol,
                     encdecFactory.get()
-                    );
-                tempProtocol.setHandler(handler);
+				);
+
+                tempProtocol.setHandler(handler); // FIXME : see if needed
                 tempProtocol.start(id, connections);
 
                 execute(handler);
@@ -64,12 +65,13 @@ public abstract class BaseServer<T> implements Server<T> {
         System.out.println("server closed!!!");
     }
 
+
     @Override
     public void close() throws IOException {
 		if (sock != null)
 			sock.close();
     }
 
-    protected abstract void execute(ConnectionHandler<T>  handler);
 
+    protected abstract void execute(ConnectionHandler<T>  handler);
 }
