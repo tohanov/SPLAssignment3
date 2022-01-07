@@ -1,19 +1,13 @@
-#include "clientConnectionHandler.h"
-
-
-class readFromKeyboardTask{
-	private:
-		ConnectionHandler *ptr_connectionHandler;
-		
-	public:
-		readFromKeyboardTask(ConnectionHandler *_ptr_connectionHandler) : ptr_connectionHandler(_ptr_connectionHandler) {
+#include "readFromKeyboardTask.h"
+	
+		readFromKeyboardTask::readFromKeyboardTask(ConnectionHandler *_ptr_connectionHandler) : ptr_connectionHandler(_ptr_connectionHandler) {
 		}
 
-		virtual ~readFromKeyboardTask() {
+		readFromKeyboardTask::~readFromKeyboardTask() {
 		}
 		
 
-		void operator()() { // FIXME : make a normal function to get rid of compilation errors
+		void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid of compilation errors
 			string line;
 			
 			while (1) { // TODO: check if shouldTerminate via the connection handler?
@@ -38,4 +32,3 @@ class readFromKeyboardTask{
 					break;
 			}
 		}
-};

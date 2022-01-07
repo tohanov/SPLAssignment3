@@ -8,6 +8,7 @@
 !Client
 !Client/**
 Client/bin/**
+!Client/bin/.gitkeep
 
 !Server
 !Server/**

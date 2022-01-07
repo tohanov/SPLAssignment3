@@ -1,18 +1,12 @@
-#include "clientConnectionHandler.h"
-
-
-class readFromSocketTask {
-	private:
-		ConnectionHandler *ptr_connectionHandler;
-
-	public:
-		readFromSocketTask(ConnectionHandler *_ptr_connectionHandler) : ptr_connectionHandler(_ptr_connectionHandler) {
+#include "readFromSocketTask.h"
+	
+		readFromSocketTask::readFromSocketTask(ConnectionHandler *_ptr_connectionHandler) : ptr_connectionHandler(_ptr_connectionHandler) {
 		}
 
-		virtual ~readFromSocketTask() {
+		readFromSocketTask::~readFromSocketTask() {
 		}
 
-		void operator()() { // FIXME : make a normal function to get rid of compilation errors
+		void readFromSocketTask::run() { // FIXME : make a normal function to get rid of compilation errors
 			// We can use one of three options to read data from the server:
 			// 1. Read a fixed number of characters
 			// 2. Read a line (up to the newline character using the getline() buffered reader
@@ -39,4 +33,4 @@ class readFromSocketTask {
 
 		// return 0;
 		}
-};
+

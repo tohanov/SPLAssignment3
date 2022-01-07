@@ -1,5 +1,6 @@
 #include "clientConnectionHandler.h"
- 
+#include "clientEncoderDecoder.h"
+
 using boost::asio::ip::tcp;
 
 using std::cin;

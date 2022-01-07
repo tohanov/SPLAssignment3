@@ -52,6 +52,9 @@ template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 	commandToOpCode["block"] = OpCode::BLOCK;
 }
 
+template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) {
+    return "";
+}
 
 template<> char* clientEncoderDecoder<string>::encode(string message){
     string command;
