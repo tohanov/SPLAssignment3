@@ -2,8 +2,8 @@ executable_name:=BGSclient
 
 # compile_flags:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude -O3 -pthread
 # link_flags:=-lboost_system -lpthread -lstdc++ -lboost_thread 
-compile_flags:=-c -Wall -Weffc++ -Iinclude -O3 -pthread -std=c++11
-link_flags:=-lboost_system -lboost_thread -lpthread -lstdc++ -pthread
+compile_flags:=-c -Iinclude -pthread -std=c++11 #-O3 -Wall -Weffc++ -g # TODO
+link_flags:=-lboost_system -lboost_thread -lpthread -pthread
 object_files:=	bin/BGSclient.o \
 				bin/clientConnectionHandler.o \
 				bin/readFromKeyboardTask.o \
@@ -13,7 +13,7 @@ object_files:=	bin/BGSclient.o \
 
 
 all: clear compile link
-# all: clean compile link
+# all: clear clean compile link
 
 
 clear:
@@ -31,15 +31,15 @@ compile: client
 
 link: $(object_files)
 	echo "[*] Linking everything..."
-	g++ $(link_flags) -o bin/$(executable_name) $(object_files) -lstdc++
+	g++ $(link_flags) -o bin/$(executable_name) $(object_files)
 
 
-check: bin/studio ExampleInput.txt
+check: bin/studio ExampleInput.txt #TODO
 	echo "Running with valgrind..."
 	valgrind --leak-check=full --show-reachable=yes bin/studio ExampleInput.txt
 
 
-checkV: bin/studio ExampleInput.txt
+checkV: bin/studio ExampleInput.txt #TODO
 	echo "Running with valgrind with -v flag..."
 	valgrind -v --leak-check=full --show-reachable=yes bin/studio ExampleInput.txt
 

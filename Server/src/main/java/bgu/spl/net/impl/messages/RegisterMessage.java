@@ -12,6 +12,11 @@ public class RegisterMessage extends ClientToServerMessage {
 
     public RegisterMessage(String username, String password, String birthday){
         super(1);
+
+		System.out.println(username);
+		System.out.println(password);
+		System.out.println(birthday);
+
         this.username=username;
         this.password=password;
         this.birthday=birthday;

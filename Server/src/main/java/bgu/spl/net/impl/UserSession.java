@@ -26,7 +26,9 @@ public class UserSession {
         this.username=username;
         this.password=password;
         this.birthday=birthday;
-        sessionId.set(-1);
+		
+        numberOfFollowers = new AtomicInteger(0);
+        sessionId = new AtomicInteger(-1);
         
         followers = new ConcurrentLinkedDeque<>(); 
         receivedMessages = new ConcurrentLinkedDeque<>();   //FIXME: concurrency issues
@@ -34,7 +36,6 @@ public class UserSession {
 
         numberOfPosts=0;
         numberOfFollowing=0;
-        numberOfFollowers = new AtomicInteger(0);
     }
 
 

@@ -33,10 +33,11 @@ public class LoginMessage extends ClientToServerMessage {
             // 
 
         UserSession userSession = usernameToUserSession.get(username);
-        if (userSession == null || captcha!=1 || !password.equals(userSession.getPassword()) || userSession.setSessionId(currentUserId) ) {
+        if (userSession == null || captcha!=1 || !password.equals(userSession.getPassword()) || !userSession.setSessionId(currentUserId) ) {
             return error();
         }
 
+		connections.getHandler(currentUserId).setUserSession(userSession);
         // connections.get(connectionId) //FIXME
 
         for(ServerToClientMessage unreadMessage : userSession.getReceivedMessages()){

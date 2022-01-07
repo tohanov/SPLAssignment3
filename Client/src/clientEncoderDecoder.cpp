@@ -4,10 +4,11 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 #include "clientEncoderDecoder.h"
 
-
+// region Encoder functions
 void addBytesToVector(vector<char> &outputVector, const char* bytes, int len);
 void getTime(char *buffer, int size);
 void shortToBytes(short num, char* bytesArr);
@@ -19,6 +20,19 @@ void encodePost(istringstream& messageStream, vector<char> &outputVector);
 void encodePM(istringstream& messageStream, vector<char> &outputVector);
 void encodeStat(istringstream& messageStream, vector<char> &outputVector);
 void encodeBlock(istringstream& messageStream, vector<char> &outputVector);
+// endregion Encoder functions
+
+
+// region Decoder functions
+string decodeNotification();
+string decodeError();
+void parseStatLogStat(string &output);
+void parseFollowUnfollow(string &output);
+string decodeAck();
+string returnCompleteMessage();
+short bytesToShort(char* bytesArr);
+// endregion Decoder functions
+
 
 
 enum OpCode {
@@ -37,7 +51,7 @@ enum OpCode {
 };
 
 unordered_map<string, int> commandToOpCode;
-
+vector<char> bytes;
 
 template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 	commandToOpCode["register"] = OpCode::REGISTER;
@@ -52,11 +66,26 @@ template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 	commandToOpCode["block"] = OpCode::BLOCK;
 }
 
-template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) {
-    return "";
+template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) { //TODO: change to &string
+    std::cout << "[*] inside decodenextbyte" << std::endl;
+
+	if (byte != ';') {
+		bytes.push_back(byte);
+	
+		return "";
+	}
+	else {
+		string output = returnCompleteMessage();
+
+		bytes.clear();
+
+		return output;
+	}
 }
 
+
 template<> char* clientEncoderDecoder<string>::encode(string message){
+	std::cout << "[*] encode()" << std::endl;
     string command;
     vector<char> outputVector;
     istringstream messageStream(message);
@@ -72,29 +101,36 @@ template<> char* clientEncoderDecoder<string>::encode(string message){
     {
 		case REGISTER:
 			encodeRegister(messageStream, outputVector);
+			break;
 		case LOGIN:
 			encodeLogin(messageStream, outputVector);
+			break;
 
 		// case LOGOUT:
 		//     encodeLogout();
 
 		case FOLLOW_UNFOLLOW:
 			encodeFollowUnfollow(messageStream, outputVector);
+			break;
 
 		case POST:
 			encodePost(messageStream, outputVector);    // "POST " is 5 chars
+			break;
 
 		case PM:
 			encodePM(messageStream, outputVector);    //date and time??
+			break;
 
 		// case LOGSTAT:
 		//     encodeLogstat(messageStream);
 
 		case STAT:
 			encodeStat(messageStream, outputVector);
+			break;
 
 		case BLOCK:
 			encodeBlock(messageStream, outputVector);
+			break;
 
 		default:;
     }
@@ -107,6 +143,103 @@ template<> char* clientEncoderDecoder<string>::encode(string message){
 
     return result;
 }
+
+
+string returnCompleteMessage() {
+	std::cout << "[*] returnCompleteMessage" << std::endl;
+	short opCode = bytesToShort(bytes.data());
+
+	switch(opCode) {
+		case NOTIFICATION:
+			return decodeNotification();
+		case ACK:
+			return decodeAck();
+		case ERROR:
+			return decodeError();
+	}
+}
+
+
+string decodeAck() {
+	std::cout << "[*] decodeAck" << std::endl;
+	string message = "ACK ";
+	short messageOpCode = bytesToShort(bytes.data() + 2); // opcode of message to which the ack is responding
+	
+	message += to_string(messageOpCode) + " ";
+
+	switch(messageOpCode) {
+		case FOLLOW_UNFOLLOW:
+			parseFollowUnfollow(message);
+		break;
+		case STAT: case LOGSTAT:
+			parseStatLogStat(message);
+		break;
+	}
+
+	return message;
+}
+
+
+void parseFollowUnfollow(string &output) {
+	output += to_string(bytes[4]) + " "; // follow/unfollow byte
+	output += (bytes.data() + 5); // username
+}
+
+
+void parseStatLogStat(string &output) {
+	for (int index = 4; bytes[index] != ';'; index += 8) {
+		output += 
+		    to_string(bytesToShort(bytes.data() + index)) + ' ' +
+			to_string(bytesToShort(bytes.data() + index + 2)) + ' ' +
+			to_string(bytesToShort(bytes.data() + index + 4)) + ' ' +
+			to_string(bytesToShort(bytes.data() + index + 6)) + '\n';
+	}
+}
+
+
+string decodeError() {
+	string message = "ERROR ";
+	short messageOpCode = bytesToShort(bytes.data() + 2);
+	
+	message += to_string(messageOpCode);
+
+	return message;
+}
+
+
+string decodeNotification() {
+	string message = "NOTIFICATION ";
+	int index;
+
+	if (bytes[2] == 1) { // Public post
+		message += "Public ";
+	}
+	else { // PM
+		message += "PM ";
+	}
+
+	int tempLen = message.length();
+	index = 3;
+
+	message += bytes.data() + index; // posting user name
+	message += " ";
+	index += message.length() - tempLen;
+
+	message += bytes.data() + index;
+
+	return message;
+}
+
+
+short bytesToShort(char* bytesArr) {
+    short result = (short)((bytesArr[0] & 0xff) << 8);
+
+    result += (short)(bytesArr[1] & 0xff);
+
+    return result;
+}
+
+
 //-------------------------------
 //encoding auxiliary functions
 // when to add ';'?
@@ -126,6 +259,7 @@ void encodeRegister(istringstream& messageStream, vector<char> &outputVector){
 
 
 void encodeLogin(istringstream& messageStream, vector<char> &outputVector){
+	cout << "[*] inside encodeLogin()" << endl;
     string username,password;
     int captcha;
  
@@ -161,6 +295,7 @@ void encodePost(istringstream& messageStream, vector<char> &outputVector){
 
 
 void encodePM(istringstream& messageStream, vector<char> &outputVector){
+	cout << "[*] inside encodePM()" << endl;
     string username, content;
 
     messageStream >> username;

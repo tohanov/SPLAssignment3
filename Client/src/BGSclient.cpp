@@ -15,6 +15,8 @@ int main (int argc, char *argv[]) {
     std::string host = argv[1];
     short port = atoi(argv[2]);
 
+	
+
     ConnectionHandler connectionHandler(host, port);
 
     if (!connectionHandler.connect()) {
@@ -22,8 +24,10 @@ int main (int argc, char *argv[]) {
         return 1;
     }
     
-    readFromKeyboardTask task1(&connectionHandler);
-    readFromSocketTask task2(&connectionHandler);
+	std::mutex mtx;
+
+    readFromKeyboardTask task1(&connectionHandler, mtx);
+    readFromSocketTask task2(&connectionHandler, mtx);
 
     // std::thread th1(&Task::run, &task1);
     // std::thread th2(&Task::run, &task2);
@@ -31,11 +35,8 @@ int main (int argc, char *argv[]) {
     std::thread th2(&readFromSocketTask::run, &task2);
     std::thread th1(&readFromKeyboardTask::run, &task1);
     
-    // th2.join();
-    // th1.join();
-    
-
-
-
+    th2.join();
+    th1.join();
+	
     return 0;
 }

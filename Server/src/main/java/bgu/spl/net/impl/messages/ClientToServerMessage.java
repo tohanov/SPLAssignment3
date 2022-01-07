@@ -21,6 +21,6 @@ public abstract class ClientToServerMessage extends Message {
     }
 
     protected ServerToClientMessage error() {
-        return error();
+        return new ErrorMessage(opCode);
     }
 }

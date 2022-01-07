@@ -54,8 +54,9 @@ public abstract class BaseServer<T> implements Server<T> {
                     encdecFactory.get()
 				);
 
+				System.out.println("[*] inside serve, before setHandler");
                 tempProtocol.setHandler(handler); // FIXME : see if needed
-                tempProtocol.start(id, connections);
+                tempProtocol.start(id++, connections);
 
                 execute(handler);
             }

@@ -26,7 +26,10 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     @Override
     public Message decodeNextByte(byte nextByte) {
+		System.out.println("[*] decodeNextByte()");
+
         if (nextByte == ';') {
+			System.out.println("[*] decodeNextByte(), got byte ';'");
             return returnCompleteMessage();
         }
 
@@ -37,6 +40,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     @Override
     public byte[] encode(Message message) {
+		System.out.println("[*] encode()");
         int opCode = message.getOpCode();    // checks whether notification (9), ack(10), error(11)
         
         if(opCode==9){
@@ -54,6 +58,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     
 
     private ClientToServerMessage returnCompleteMessage(){
+		System.out.println("[*] returnCompleteMessage()");
 
         int opCode= getOpCode(bytes);
 
@@ -113,18 +118,24 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     //-----------------------------------------
 
     private ClientToServerMessage createRegisterMessage() {
+		System.out.println("[*] createRegisterMessage()");
         String[] result = (new String(bytes, 2, len-3, StandardCharsets.UTF_8)).split("\0");  //2 is offset in order to remove the opCode
         len=0;
-               
+        
         return new RegisterMessage(result[0], result[1], result[2]);
-
     }
 
     private ClientToServerMessage createLoginMessage(){
         String[] result = (new String(bytes, 2, len-2, StandardCharsets.UTF_8)).split("\0");  //2 is offset in order to remove the opCode
         len=0;
 
-        return new LoginMessage(result[0], result[1], Byte.parseByte(result[2]));
+		System.out.println(Arrays.deepToString(result));
+
+		byte captcha = 0;
+		if (result.length == 3)
+			captcha = (byte)(result[2].charAt(0));
+
+        return new LoginMessage(result[0], result[1],  captcha);
 
     }
 
@@ -190,7 +201,8 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         byte[] postingUser=((NotificationMessage)message).getPostingUser().getBytes();
         byte[] content= ((NotificationMessage)message).getContent().getBytes();
         
-        int size= 5 + postingUser.length + content.length, index=0;
+        int size= 5 + 1 + postingUser.length + content.length;
+		int index=0;
 
         byte[] output = new byte[size];
 
@@ -208,6 +220,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         index+=content.length;
 
         output[index++] = 0;
+		output[index] = ';';
 
         return output;
     }
@@ -215,6 +228,8 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     @SuppressWarnings("unchecked")
     private byte[] encodeAck(Message message) {
+		System.out.println("[*] encodeAck()");
+
         short messageOpCode = ((ServerToClientMessage) message).getMessageOpCode();
         
         byte[] opCodeBytes = shortToBytes((short)10); 
@@ -222,17 +237,18 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         byte[] output;
 
         if(messageOpCode == 4){  //follow
-            byte[] temp = (( (String) ((AckMessage) message).getInformation())).getBytes();
-            output = new byte[4 + temp.length];
+            byte[] usernameBytes = (( (String) ((AckMessage) message).getInformation())).getBytes();
+            output = new byte[4 + usernameBytes.length];
+			// FIXME add follo/unfollow byte
             System.arraycopy(opCodeBytes, 0, output, 0, 2);
             System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
-            System.arraycopy(temp, 0, output, 4, temp.length);
+            System.arraycopy(usernameBytes, 0, output, 4, usernameBytes.length);
 
         }
 
-        else if(messageOpCode == 7 || messageOpCode == 8){
+        else if(messageOpCode == 7 || messageOpCode == 8){ // stat or logstat ack
             ArrayList<UserStats> statsList = (ArrayList<UserStats>)(((AckMessage) message).getInformation());
-            output = new byte[4 + 8 * statsList.size()]; // each message is 8 bytes, except for the first which contains additional 4 bytes for opcode and messageOpCode. 
+            output = new byte[4 + 8 * statsList.size() + 1]; // each message is 8 bytes, except for the first which contains additional 4 bytes for opcode and messageOpCode. 
             
             System.arraycopy(opCodeBytes, 0, output, 0, 2);
             System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
@@ -247,25 +263,27 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         }
 
         else{
-            output = new byte[4]; 
+            output = new byte[4 + 1]; 
             System.arraycopy(opCodeBytes, 0, output, 0, 2);
             System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
         }
 
+		output[output.length - 1] = ';';
         return output;
     }
 
 
     private byte[] encodeError(Message message) {
-        short messageOpCode = ((ServerToClientMessage) message).getMessageOpCode();
+        short messageOpCode = ((ServerToClientMessage) message).getMessageOpCode(); // opcode of message that error responds to
         
         byte[] opCodeBytes = shortToBytes((short)11); 
         byte[] messageOpCodeBytes = shortToBytes(messageOpCode);
         
-        byte[] output = new byte[4]; 
+        byte[] output = new byte[5]; 
         System.arraycopy(opCodeBytes, 0, output, 0, 2);
         System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
 
+		output[4] = ';';
         return output;
         
     }
@@ -289,8 +307,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     }
 
     private byte[] userStatsToBytes(UserStats userStats){
-
-        byte[] output= new byte[12];
+        byte[] output= new byte[8];
 
         byte[][] info = {
             shortToBytes((short)userStats.getAge()),
@@ -303,7 +320,6 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
             System.arraycopy(bytesArray, 0, output, index, bytesArray.length);
             index += bytesArray.length;
         }
-        
         
         return output;
     }

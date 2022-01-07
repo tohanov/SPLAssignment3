@@ -4,7 +4,7 @@ public class AckMessage extends ServerToClientMessage{
 
     Object information;
 
-    AckMessage(int messageOpCode){
+    AckMessage(int messageOpCode){ //FIXME get message object
         super(messageOpCode,10);
         
     }

@@ -8,8 +8,10 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
- 
-ConnectionHandler::ConnectionHandler(string host, short port): host_(host), port_(port), io_service_(), socket_(io_service_), encDec(){
+
+ConnectionHandler::ConnectionHandler(string host, short port) : 
+host_(host), port_(port), io_service_(), socket_(io_service_), encDec(), protocol()
+{
 }
 
 // ConnectionHandler::ConnectionHandler(ConnectionHandler &other) : socket_(other.socket_) {
@@ -47,12 +49,15 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 			throw boost::system::system_error(error);
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+
+		exit(-1); // FIXME : remove
         return false;
     }
     return true;
 }
 
 bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
+	cout << "[*] inside sendBytes()" << endl;
     int tmp = 0;
     
 	boost::system::error_code error;
@@ -64,6 +69,8 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 			throw boost::system::system_error(error);
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+
+		exit(-1); // FIXME : remove
         return false;
     }
     return true;
@@ -71,25 +78,35 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
  
 bool ConnectionHandler::getLine(std::string& line) {
     // return getFrameAscii(line, '\n');
-    string s="";
+    string decoded="";
     char ch;
     try {
 		do{
 			getBytes(&ch, 1);
-            s = encDec.decodeNextByte(ch);
-        }while (s == "");
-    } catch (std::exception& e) {
+            decoded = encDec.decodeNextByte(ch);
+        } while (decoded == "");
+    }
+	catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+
+		exit(-1); // FIXME : remove
         return false;
     }
-    line = s;
-
+    protocol.process(decoded);
+	// FIXME protocol call
+	line = decoded;
     return true;
 }
 
 bool ConnectionHandler::sendLine(std::string& line) {
     char *ptr_Bytes = encDec.encode(line);
-    int len = strchr(ptr_Bytes,';') - ptr_Bytes + 1;
+	char *ptr_semicolon = ptr_Bytes;
+
+	while (*ptr_semicolon != ';') ++ptr_semicolon;
+
+    int len = ptr_semicolon - ptr_Bytes + 1; // strchr(ptr_Bytes,';') - ptr_Bytes + 1;
+
+	cout << "[*] inside sendLine(), len=" << len << endl;
 
     bool connectionClosed = sendBytes(ptr_Bytes, len);
 
@@ -108,6 +125,8 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
         }while (delimiter != ch);
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+
+		exit(-1); // FIXME : remove
         return false;
     }
     return true;

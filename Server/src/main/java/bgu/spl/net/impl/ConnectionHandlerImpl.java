@@ -18,6 +18,7 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private UserSession userSession;
+	private Connections<T> connections;
 
 
     public ConnectionHandlerImpl(int _id, 
@@ -28,7 +29,7 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
         id = _id;
         this.socket=socket;
         this.protocol=protocol;
-        this.protocol.start(id, connections);
+        // this.protocol.start(id, connections);
         
         this.encDec=encDec;   
         try {
@@ -39,11 +40,13 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
         }
            
         userSession=null;
+		this.connections = connections;
     }
 
     @Override
     public void close() throws IOException {
-        socket.close();        
+		connections.disconnect(id);
+        socket.close();
     }
 
     @Override
@@ -63,9 +66,11 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
     @Override
     public void run() {
         
-        int read;
+        int read = 8888;
         try {
             while (!protocol.shouldTerminate() && (read = in.read()) >= 0) {
+				System.out.println("[*] inside connection handler run(), inside while, read byte="+(byte) read);
+				
                 T nextMessage = encDec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
                     // T response = protocol.process(nextMessage);
@@ -78,10 +83,14 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
                     
                 }
             }
+
+			System.out.println("[*] run(), read=" + read);
+        
+			close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
     }
 
     public UserSession getUserSession(){

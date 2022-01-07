@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 
 #include "clientEncoderDecoder.h"
+#include "clientProtocol.h"
 
 
 using boost::asio::ip::tcp;
@@ -20,6 +21,7 @@ class ConnectionHandler {
 		boost::asio::io_service io_service_;   // Provides core I/O functionality
 		tcp::socket socket_; 
 		clientEncoderDecoder<string> encDec;
+		clientProtocol<string> protocol;
 	
 	public:
 		ConnectionHandler(std::string host, short port);

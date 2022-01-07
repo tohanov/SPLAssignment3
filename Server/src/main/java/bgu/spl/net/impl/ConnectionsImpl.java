@@ -41,9 +41,7 @@ public class ConnectionsImpl<T> implements Connections<T>{
 
     @Override
     public void disconnect(int connectionId) {      //TODO:check later if working
-        
-        connectionsMap.remove(connectionId);    
-        
+        connectionsMap.remove(connectionId);
     }
 
     public void addIdToConnections(Integer id, ConnectionHandler<T> conHandler){

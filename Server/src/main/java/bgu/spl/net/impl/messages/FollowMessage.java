@@ -27,7 +27,7 @@ public class FollowMessage extends ClientToServerMessage {
                 return error();
 
         currentUserSession.increaseFollowing();    
-        return ack(usernameToFollow);    //TODO:fix
+        return ack(usernameToFollow);
 
     }
 
