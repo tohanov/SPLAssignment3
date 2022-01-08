@@ -12,7 +12,7 @@ template<> clientProtocol<string>::clientProtocol() : should_terminate(false) {
 
 
 template<> void clientProtocol<string>::process(string message) {
-    cout << message << std::endl;
+    cout << message << std::endl; //FIXME mutex
 }
 
 

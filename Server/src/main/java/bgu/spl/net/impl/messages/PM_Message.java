@@ -1,4 +1,5 @@
 package bgu.spl.net.impl.messages;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,18 +12,25 @@ public class PM_Message extends ClientToServerMessage {
     private String targetUser;
     private String dateAndTime;
 
-    private HashSet<String> filteredWords;
+	private static class FilteredWordsWrapper {
+		private static HashSet<String> filteredWords = new HashSet<>(
+			Arrays.asList(
+				new String[] {
+					"war",
+					"kill",
+					"trump",
+					"murder",
+					"blood"
+				}
+			)
+		);
+	}
 
     public PM_Message(String targetUser, String messageToPost, String dateAndTime){
         super(6);
         this.messageToPost=messageToPost;
         this.targetUser=targetUser;
         this.dateAndTime=dateAndTime;
-
-        filteredWords=new HashSet<>(); //TODO:add words
-        filteredWords.add("war");
-        filteredWords.add("kill");
-
     }
 
     @Override
@@ -54,11 +62,10 @@ public class PM_Message extends ClientToServerMessage {
     }
 
     private boolean needsToBeFiltered(String word){
-        return filteredWords.contains(word);
+        return FilteredWordsWrapper.filteredWords.contains(word.toLowerCase());
     }
 
     private void filterMessage(){
-        
         String[] messageByWords=messageToPost.split(" ");
 
         for(int i=0;i<messageByWords.length;++i){
@@ -75,9 +82,6 @@ public class PM_Message extends ClientToServerMessage {
                 filteredMessage= filteredMessage.concat(messageByWords[i]);
         }
 
-               
         messageToPost=filteredMessage;
-
     }
-    
 }

@@ -69,9 +69,10 @@ template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) { //TODO: change to &string
     // std::cout << "[*] inside decodenextbyte" << std::endl;
 
+
 	if (byte != ';') {
 		bytes.push_back(byte);
-	
+
 		return "";
 	}
 	else {
@@ -92,10 +93,15 @@ template<> char* clientEncoderDecoder<string>::encode(string message){
 
     messageStream >> command;
 
+	transform(command.begin(), command.end(), command.begin(), ::tolower);
+
     char encodedOpCode[] = {0,0};
 
     shortToBytes(commandToOpCode[command], encodedOpCode);
     addBytesToVector(outputVector, encodedOpCode, 2);
+
+	// cout << "stat code=" << commandToOpCode["stat"] << endl;
+	// cout << "logstat code=" << commandToOpCode["logstat"] << endl;
 
     switch (commandToOpCode[command])
     {
@@ -189,13 +195,24 @@ void parseFollowUnfollow(string &output) {
 
 void parseStatLogStat(string &output) {
 	output += " ";
-	for (int index = 4; bytes[index] != ';'; index += 8) {
+	
+	for (int index = 4; index < bytes.size() /* bytes[index] != ';' */; index += 8) {
+		// cout << "[*] parseStatLogStat(), inside loop, index=" << index ;
+		// cout << ", byte=" << bytes[index] << endl;
+
 		output += 
 		    to_string(bytesToShort(bytes.data() + index)) + ' ' +
 			to_string(bytesToShort(bytes.data() + index + 2)) + ' ' +
 			to_string(bytesToShort(bytes.data() + index + 4)) + ' ' +
 			to_string(bytesToShort(bytes.data() + index + 6)) + '\n';
+		
+		// cout << "output=" << output << endl;
+		// cout << "index=" << index << endl;
+		// cout << "char at next index=" << bytes[index + 8] << endl;
+		// break; // FIXME
 	}
+
+	output[output.length() - 1] = 0;
 }
 
 
@@ -314,13 +331,15 @@ void encodePM(istringstream& messageStream, vector<char> &outputVector){
 }
 
 
-void encodeStat(istringstream& messageStream, vector<char> &outputVector){
-  string temp;
-  getline(messageStream, temp);
+void encodeStat(istringstream& messageStream, vector<char> &outputVector) {
+	string temp;
+	messageStream >> std::ws;
 
-  std::replace( temp.begin(), temp.end(), ' ', '|'); // replace all ' ' with '|'
+	getline(messageStream, temp);
 
-  addBytesToVector(outputVector, temp.c_str(), temp.length() + 1);
+	std::replace(temp.begin(), temp.end(), ' ', '|'); // replace all ' ' with '|'
+
+	addBytesToVector(outputVector, temp.c_str(), temp.length() + 1);
 }
 
 

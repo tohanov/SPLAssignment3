@@ -24,11 +24,10 @@ void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid 
 		// std::cin.getline(buf, bufsize);
 		// std::string line(buf);
 
-		cout << "> ";
+		cout << "> "; // FIXME mutex
 		getline(cin, line);
 
 		// int len = line.length();
-		transform(line.begin(), line.end(), line.begin(), ::tolower);
 		// cout << "before sendline()" << std::endl;
 
 		// std::lock_guard<std::mutex> lock(mtx);
@@ -45,7 +44,7 @@ void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid 
 		// std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
 
 		while (logoutStage == LogoutStages::WAITING_FOR_ACK) {
-			cout << "[!!!] waiting for ack for logout" << endl;
+			cout << "[remove me] waiting for ack for logout" << endl;
 			// wait for 3 secs
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}

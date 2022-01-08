@@ -19,8 +19,8 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     public BidiMessageEncoderDecoderImpl(){
 
-        bytes= new byte[1 << 10];
-        len=0;
+		bytes = new byte[1 << 10];
+		len = 0;
     }
 
 
@@ -58,44 +58,56 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     
 
     private ClientToServerMessage returnCompleteMessage(){
-
         int opCode= getOpCode(bytes);
 		System.out.println("[*] returnCompleteMessage(), opCode=" + opCode);
+		ClientToServerMessage completeMessage;
 
         switch (opCode) {
             case 1: // register
-                return createRegisterMessage();
+				completeMessage =  createRegisterMessage();
+				break;
                 
         
             case 2: // login
-                return createLoginMessage();
+				completeMessage =  createLoginMessage();
+				break;
             
 
             case 3: // logout
-                return new LogoutMessage();
+				completeMessage =  new LogoutMessage();
+				break;
                 
             case 4: // follow/unollow
-                return createFollowUnfollowMessage();
+				completeMessage =  createFollowUnfollowMessage();
+				break;
                 
 
             case 5: // post
-                return createPostMessage();             
+				completeMessage =  createPostMessage();         
+				break;    
 
             case 6: // private message
-                return createPM_Message();              
+				completeMessage =  createPM_Message();        
+				break;      
 
             case 7: //logstat
-                return new LogstatMessage();
+				completeMessage =  new LogstatMessage();
+				break;
                 
             case 8: //stat
-               return createStatMessage();
+				completeMessage =  createStatMessage();
+				break;
 
             case 12:  //block
-                return createBlockMessage();  
+                completeMessage = createBlockMessage();  
+				break;
 				
 			default:
-                return null;
+				completeMessage = null;
         }
+
+		len = 0; //FIXME
+		return completeMessage;
     }
 
     
@@ -179,9 +191,8 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     private ClientToServerMessage createStatMessage(){
         String usernamesString = new String(bytes, 2 , len-3, StandardCharsets.UTF_8);
         len=0;
-        List<String> list = Arrays.asList(usernamesString.split("|"));
 
-        return new StatMessage((ArrayList<String>)list);
+        return new StatMessage(usernamesString.split("\\|"));
 
     }
 
@@ -228,9 +239,9 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     @SuppressWarnings("unchecked")
     private byte[] encodeAck(Message message) {
-		System.out.println("[*] encodeAck()");
 
         short messageOpCode = ((ServerToClientMessage) message).getMessageOpCode();
+		System.out.println("[*] encodeAck(), opCode=" + messageOpCode);
         
         byte[] opCodeBytes = shortToBytes((short)10); // Ack opcode
         byte[] messageOpCodeBytes = shortToBytes(messageOpCode); // the opcode of the message the ack is responding to
@@ -249,7 +260,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
         else if(messageOpCode == 7 || messageOpCode == 8){ // stat or logstat ack
             ArrayList<UserStats> statsList = (ArrayList<UserStats>)(((AckMessage) message).getInformation());
-            output = new byte[4 + 8 * statsList.size() + 1]; // each message is 8 bytes, except for the first which contains additional 4 bytes for opcode and messageOpCode. 
+            output = new byte[2 + 2 + 8 * statsList.size() + 1]; // each message is 8 bytes, except for the first which contains additional 4 bytes for opcode and messageOpCode. 
             
             System.arraycopy(opCodeBytes, 0, output, 0, 2);
             System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
@@ -257,9 +268,9 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
             int index= 4;
             for(UserStats userStats : statsList){
                 byte[] temp = userStatsToBytes(userStats);
-                System.arraycopy(temp, 0, output, index, temp.length );
-                index+=temp.length;
 
+                System.arraycopy(temp, 0, output, index, temp.length );
+                index+=temp.length; // 8
             }
         }
 
@@ -293,9 +304,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
     //-----------------------------------------------------
 
-    public byte[] shortToBytes(short num)
-
-    {
+    public byte[] shortToBytes(short num) {
 
         byte[] bytesArr = new byte[2];
 
@@ -316,10 +325,11 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
             shortToBytes((short)userStats.getNumberOfFollowers()),
             shortToBytes((short)userStats.getNumberOfFollowing())
         };
+
         int index = 0;
         for (byte[] bytesArray : info) {
             System.arraycopy(bytesArray, 0, output, index, bytesArray.length);
-            index += bytesArray.length;
+            index += bytesArray.length; // 2
         }
         
         return output;
