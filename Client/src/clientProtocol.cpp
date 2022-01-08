@@ -4,15 +4,12 @@
 #include "clientProtocol.h"
 
 
-template<typename T> clientProtocol<T>::clientProtocol() : should_terminate(false) {
-}
-
 template<> clientProtocol<string>::clientProtocol() : should_terminate(false) {
 }
 
 
 template<> void clientProtocol<string>::process(string message) {
-    cout << message << std::endl; //FIXME mutex
+    cout << "<< " << message << "\n>> " << flush; //FIXME mutex
 }
 
 

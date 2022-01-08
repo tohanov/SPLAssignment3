@@ -25,7 +25,7 @@ void readFromSocketTask::run() { // FIXME : make a normal function to get rid of
 			break;
 		}
 
-		cout << "> "; // FIXME 
+		// cout << "> "; // FIXME 
 
 		// cout << "[socket task] read from server: " << answer << std::endl;
 
@@ -35,7 +35,7 @@ void readFromSocketTask::run() { // FIXME : make a normal function to get rid of
 		// std::cout << "Reply: " << answer << " " << len << " bytes " << std::endl << std::endl;
 		if (answer == "ACK 3") {   //TODO: change format if needed
 			logoutStage = LogoutStages::LOGGED_OUT;
-			std::cout << "Exiting...\n" << std::endl;
+			std::cout << "[*] exiting...\n" << std::endl;
 			break;
 		}
 		else if (answer == "ERROR 3") {

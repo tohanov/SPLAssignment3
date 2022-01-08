@@ -17,6 +17,8 @@ readFromKeyboardTask::~readFromKeyboardTask() {
 void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid of compilation errors
 	string line;
 
+	cout << ">> "; // FIXME mutex
+
 	while (logoutStage != LogoutStages::LOGGED_OUT) { // TODO: check if shouldTerminate via the connection handler?
 		// const short bufsize = 1024;
 		// char buf[bufsize];
@@ -24,7 +26,6 @@ void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid 
 		// std::cin.getline(buf, bufsize);
 		// std::string line(buf);
 
-		cout << "> "; // FIXME mutex
 		getline(cin, line);
 
 		// int len = line.length();
@@ -43,8 +44,11 @@ void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid 
 		// connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
 		// std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
 
+		if (logoutStage == LogoutStages::WAITING_FOR_ACK) { 
+			cout << "[*] waiting for ack for logout" << endl;
+		}
+
 		while (logoutStage == LogoutStages::WAITING_FOR_ACK) {
-			cout << "[remove me] waiting for ack for logout" << endl;
 			// wait for 3 secs
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}

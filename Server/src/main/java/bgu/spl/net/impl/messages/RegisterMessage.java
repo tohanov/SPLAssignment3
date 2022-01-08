@@ -29,13 +29,24 @@ public class RegisterMessage extends ClientToServerMessage {
 
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSessionHashMap){
 
-        UserSession currentUserSession=usernameToUserSessionHashMap.putIfAbsent(username, new UserSession(username, password, birthday));
+		
+        
+
 		ConnectionHandler<Message> handler = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId);
 
 		// if name is registered already or connection logged in as another user
-        if(currentUserSession!=null || handler.getUserSession() != null)
-            return error();
+        if(handler.getUserSession() != null) { // if current connection is logged in
+		    return error();
+		}
 
+		UserSession currentUserSession=usernameToUserSessionHashMap.putIfAbsent(
+			username, 
+			new UserSession(username, password, birthday)
+		);
+
+		if (currentUserSession != null) { // if named user exists already
+		    return error();
+		}
 
         return ack();       
 

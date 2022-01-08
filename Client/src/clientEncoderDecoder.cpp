@@ -154,7 +154,7 @@ template<> char* clientEncoderDecoder<string>::encode(string message){
 string returnCompleteMessage() {
 	// std::cout << "[*] returnCompleteMessage" << std::endl;
 	short opCode = bytesToShort(bytes.data());
-
+	
 	switch(opCode) {
 		case NOTIFICATION:
 			return decodeNotification();
@@ -163,6 +163,8 @@ string returnCompleteMessage() {
 		case ERROR:
 			return decodeError();
 	}
+
+	return "";
 }
 
 
