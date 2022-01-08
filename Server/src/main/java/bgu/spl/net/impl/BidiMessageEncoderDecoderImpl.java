@@ -58,9 +58,9 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
     
 
     private ClientToServerMessage returnCompleteMessage(){
-		System.out.println("[*] returnCompleteMessage()");
 
         int opCode= getOpCode(bytes);
+		System.out.println("[*] returnCompleteMessage(), opCode=" + opCode);
 
         switch (opCode) {
             case 1: // register

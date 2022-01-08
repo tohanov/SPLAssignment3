@@ -3,6 +3,7 @@
 #include "readFromKeyboardTask.h"
 #include "readFromSocketTask.h"
 #include <iostream>
+#include "logoutStages.h"
 
 /**
 * This code assumes that the server replies the exact text the client sent it (as opposed to the practical session example)
@@ -15,7 +16,7 @@ int main (int argc, char *argv[]) {
     std::string host = argv[1];
     short port = atoi(argv[2]);
 
-	
+	LogoutStages logoutStage = LogoutStages::NOT_LOGGED_OUT;
 
     ConnectionHandler connectionHandler(host, port);
 
@@ -24,19 +25,21 @@ int main (int argc, char *argv[]) {
         return 1;
     }
     
-	std::mutex mtx;
+	std::mutex mtx; // FIXME needed when printing notification and stuff
 
-    readFromKeyboardTask task1(&connectionHandler, mtx);
-    readFromSocketTask task2(&connectionHandler, mtx);
+    readFromKeyboardTask keyboardTask(&connectionHandler, mtx, logoutStage);
+    readFromSocketTask socketTask(&connectionHandler, mtx, logoutStage);
 
     // std::thread th1(&Task::run, &task1);
     // std::thread th2(&Task::run, &task2);
 
-    std::thread th2(&readFromSocketTask::run, &task2);
-    std::thread th1(&readFromKeyboardTask::run, &task1);
+    std::thread socketThread(&readFromSocketTask::run, &socketTask);
+    std::thread keyboardThread(&readFromKeyboardTask::run, &keyboardTask);
     
-    th2.join();
-    th1.join();
+    socketThread.join();
+	// FIXME sync using mutex with notifications
+	// keyboardThread.terminate();
+    keyboardThread.join();
 	
     return 0;
 }

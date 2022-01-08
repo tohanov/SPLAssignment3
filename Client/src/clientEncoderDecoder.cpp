@@ -165,7 +165,7 @@ string decodeAck() {
 	string message = "ACK ";
 	short messageOpCode = bytesToShort(bytes.data() + 2); // opcode of message to which the ack is responding
 	
-	message += to_string(messageOpCode) + " ";
+	message += to_string(messageOpCode);
 
 	switch(messageOpCode) {
 		case FOLLOW_UNFOLLOW:
@@ -181,12 +181,13 @@ string decodeAck() {
 
 
 void parseFollowUnfollow(string &output) {
-	output += to_string(bytes[4]) + " "; // follow/unfollow byte
-	output += (bytes.data() + 5); // username
+	output += " " + to_string(bytesToShort(bytes.data() + 2)) + " "; // follow/unfollow 2 bytes
+	output += (bytes.data() + 4); // username
 }
 
 
 void parseStatLogStat(string &output) {
+	output += " ";
 	for (int index = 4; bytes[index] != ';'; index += 8) {
 		output += 
 		    to_string(bytesToShort(bytes.data() + index)) + ' ' +

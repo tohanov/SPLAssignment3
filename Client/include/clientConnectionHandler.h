@@ -22,6 +22,7 @@ class ConnectionHandler {
 		tcp::socket socket_; 
 		clientEncoderDecoder<string> encDec;
 		clientProtocol<string> protocol;
+		// bool should_terminate
 	
 	public:
 		ConnectionHandler(std::string host, short port);
@@ -56,6 +57,8 @@ class ConnectionHandler {
 		
 		// Close down the connection properly.
 		void close();
+
+		// bool shouldTerminate();
 }; //class ConnectionHandler
 
 
