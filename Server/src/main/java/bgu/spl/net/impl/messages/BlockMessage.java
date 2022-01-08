@@ -2,6 +2,7 @@ package bgu.spl.net.impl.messages;
 
 import java.util.concurrent.ConcurrentHashMap;
 import bgu.spl.net.bidi.Connections;
+import bgu.spl.net.impl.ConnectionsImpl;
 import bgu.spl.net.impl.UserSession;
 
 public class BlockMessage extends ClientToServerMessage{
@@ -16,7 +17,7 @@ public class BlockMessage extends ClientToServerMessage{
     @Override
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
        
-        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+        UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
 
         if(currentUserSession==null /*|| !currentUserSession.isLoggedIn()*/)
             return error();

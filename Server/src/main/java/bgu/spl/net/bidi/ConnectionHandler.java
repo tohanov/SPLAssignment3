@@ -2,8 +2,12 @@ package bgu.spl.net.bidi;
 
 import java.io.Closeable;
 
-public interface ConnectionHandler<T> extends Closeable{
+import bgu.spl.net.impl.UserSession;
 
-    void send(T msg) ;
+public interface ConnectionHandler<T> extends Closeable {
+    void send(T msg);
 
+	UserSession getUserSession(); //FIXME
+
+	void setUserSession(UserSession session); //FIXME
 }

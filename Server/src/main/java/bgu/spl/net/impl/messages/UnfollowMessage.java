@@ -3,6 +3,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
 
 public class UnfollowMessage extends ClientToServerMessage{
     
@@ -16,7 +17,7 @@ public class UnfollowMessage extends ClientToServerMessage{
 
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
 
-        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+        UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
         UserSession userSessionToUnfollow=usernameToUserSession.get(usernameToUnfollow);
 
         if(!currentUserSession.isLoggedIn() || userSessionToUnfollow==null || !userSessionToUnfollow.removeFollower(currentUserSession))

@@ -2,7 +2,6 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
-import bgu.spl.net.impl.ConnectionHandlerImpl;
 import bgu.spl.net.bidi.BidiMessagingProtocol;
 import bgu.spl.net.bidi.ConnectionHandler;
 
@@ -49,12 +48,12 @@ public interface Server<T> extends Closeable {
      * @param <T> The Message Object for the protocol
      * @return A new reactor server
      */
-    // public static <T> Server<T> reactor(
-    //         int nthreads,
-    //         int port,
-    //         Supplier<BidiMessagingProtocol<T>> protocolFactory,
-    //         Supplier<MessageEncoderDecoder<T>> encoderDecoderFactory) {
-    //     return new Reactor<T>(nthreads, port, protocolFactory, encoderDecoderFactory);
-    // }
+    public static <T> Server<T> reactor(
+            int nthreads,
+            int port,
+            Supplier<BidiMessagingProtocol<T>> protocolFactory,
+            Supplier<MessageEncoderDecoder<T>> encoderDecoderFactory) {
+        return new Reactor<T>(nthreads, port, protocolFactory, encoderDecoderFactory);
+    }
 
 }

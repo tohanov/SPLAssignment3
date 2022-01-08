@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
 
 public class PostMessage extends ClientToServerMessage{
 
@@ -21,7 +22,7 @@ public class PostMessage extends ClientToServerMessage{
 
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
 
-        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+        UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
 
         if(currentUserSession==null /* || !currentUserSession.isLoggedIn() */)
             return error();
@@ -41,10 +42,10 @@ public class PostMessage extends ClientToServerMessage{
 
                 if(targetUserSession != null && !targetUserSession.isBlockingOtherUser(currentUserSession.getUsername())){
 
-                    targetUserSession.increaseNumOfPosts();
+                    // targetUserSession.increaseNumOfPosts();
 
                     if(targetUserSession.isLoggedIn())           //FIXME: concurrency: user logouts during sending
-                        connections.getHandler(targetUserSession.getSessionId()).send(wrappedMessage); 
+						((ConnectionsImpl<Message>)connections).getHandler(targetUserSession.getSessionId()).send(wrappedMessage); 
                     else{
 
                         targetUserSession.getReceivedMessages().add(wrappedMessage);
@@ -53,6 +54,8 @@ public class PostMessage extends ClientToServerMessage{
                 
             }
             
+			currentUserSession.increaseNumOfPosts();
+			
             //FIXME: check if not sending message to self, check if blocked, archive the messages 
             return ack();
         }

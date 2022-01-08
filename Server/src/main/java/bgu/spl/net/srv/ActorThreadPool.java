@@ -11,12 +11,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class ActorThreadPool {
 
+public class ActorThreadPool {
     private final Map<Object, Queue<Runnable>> acts;
     private final ReadWriteLock actsRWLock;
     private final Set<Object> playingNow;
     private final ExecutorService threads;
+
 
     public ActorThreadPool(int threads) {
         this.threads = Executors.newFixedThreadPool(threads);
@@ -24,6 +25,7 @@ public class ActorThreadPool {
         playingNow = ConcurrentHashMap.newKeySet();
         actsRWLock = new ReentrantReadWriteLock();
     }
+
 
     public void submit(Object act, Runnable r) {
         synchronized (act) {
@@ -36,14 +38,15 @@ public class ActorThreadPool {
         }
     }
 
+
     public void shutdown() {
         threads.shutdownNow();
     }
 
-    private Queue<Runnable> pendingRunnablesOf(Object act) {
 
+    private Queue<Runnable> pendingRunnablesOf(Object act) {
         actsRWLock.readLock().lock();
-        Queue<Runnable> pendingRunnables = acts.get(act);
+        	Queue<Runnable> pendingRunnables = acts.get(act);
         actsRWLock.readLock().unlock();
 
         if (pendingRunnables == null) {
@@ -51,8 +54,10 @@ public class ActorThreadPool {
             acts.put(act, pendingRunnables = new LinkedList<>());
             actsRWLock.writeLock().unlock();
         }
+
         return pendingRunnables;
     }
+
 
     private void execute(Runnable r, Object act) {
         threads.execute(() -> {
@@ -64,6 +69,7 @@ public class ActorThreadPool {
         });
     }
 
+
     private void complete(Object act) {
         synchronized (act) {
             Queue<Runnable> pending = pendingRunnablesOf(act);
@@ -74,5 +80,4 @@ public class ActorThreadPool {
             }
         }
     }
-
 }

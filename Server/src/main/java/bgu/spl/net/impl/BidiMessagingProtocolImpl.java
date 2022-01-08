@@ -14,7 +14,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private ConnectionsImpl<Message> connections;
     private ConcurrentHashMap<String,UserSession> usernameToUserSession;
     private boolean shouldTerminate;
-    private ConnectionHandlerImpl<Message> handler;
+    private ConnectionHandler<Message> handler;
     private int id;
 
 
@@ -27,8 +27,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     @Override
     public void start(int connectionId, Connections<Message> connections) {
         this.connections=(ConnectionsImpl<Message>) connections;
+		handler = this.connections.getHandler(connectionId);
+		
 		System.out.println(connectionId + " " + handler);
-        ((ConnectionsImpl<Message>) connections).addIdToConnections(connectionId, handler);
+
+        // ((ConnectionsImpl<Message>) connections).addIdToConnections(connectionId, handler);
         id = connectionId;
     }
 
@@ -53,7 +56,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     public void setHandler(ConnectionHandler<Message> handler) {
 		System.out.println("[*] inside setHandler, handler=" + handler);
-        this.handler=(ConnectionHandlerImpl<Message>) handler;
+        this.handler=handler;
         
     }
     

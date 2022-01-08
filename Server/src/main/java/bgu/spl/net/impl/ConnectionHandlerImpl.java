@@ -21,7 +21,8 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
 	private Connections<T> connections;
 
 
-    public ConnectionHandlerImpl(int _id, 
+    public ConnectionHandlerImpl(
+			int _id, 
             Connections<T> connections,
             Socket socket,
             BidiMessagingProtocol<T> protocol,
@@ -58,9 +59,6 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
         } catch(IOException e){
             e.printStackTrace();
         }
-        
-        
-        
     }
 
     @Override
@@ -68,6 +66,8 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
         
         int read = 8888;
         try {
+			protocol.start(id, connections);
+
             while (!protocol.shouldTerminate() && (read = in.read()) >= 0) {
 				System.out.println("[*] inside connection handler run(), inside while, read byte="+(byte) read);
 				

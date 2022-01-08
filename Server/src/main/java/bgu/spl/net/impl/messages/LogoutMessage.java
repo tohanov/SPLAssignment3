@@ -7,6 +7,7 @@ import bgu.spl.net.bidi.ConnectionHandler;
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.ConnectionHandlerImpl;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
 
 public class LogoutMessage extends ClientToServerMessage {
 
@@ -18,7 +19,7 @@ public class LogoutMessage extends ClientToServerMessage {
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
         //TODO: Please notice that LOGOUT message closes the client's program.
 		
-		ConnectionHandlerImpl<Message> handler = connections.getHandler(currentUserId);
+		ConnectionHandler<Message> handler = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId);
         UserSession currentnUserSession = handler.getUserSession();
 
         if(currentnUserSession==null)

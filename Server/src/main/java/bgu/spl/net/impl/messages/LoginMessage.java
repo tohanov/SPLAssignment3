@@ -2,9 +2,13 @@ package bgu.spl.net.impl.messages;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import bgu.spl.net.bidi.ConnectionHandler;
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.ConnectionHandlerImpl;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
+
+
 
 public class LoginMessage extends ClientToServerMessage {
 
@@ -33,7 +37,7 @@ public class LoginMessage extends ClientToServerMessage {
             // set the connection id of the user session of the given username to the one of the connection handler
             // 
 		
-		ConnectionHandlerImpl<Message> handler = connections.getHandler(currentUserId);
+		ConnectionHandler<Message> handler = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId);
         UserSession userSession = usernameToUserSession.get(username);
 
 		if (
@@ -50,7 +54,7 @@ public class LoginMessage extends ClientToServerMessage {
         // connections.get(connectionId) //FIXME
 
         for(ServerToClientMessage unreadMessage : userSession.getReceivedMessages()){
-            connections.getHandler(currentUserId).send(unreadMessage);
+            ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).send(unreadMessage);
             userSession.getReceivedMessages().remove(unreadMessage);
         }
         

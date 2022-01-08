@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
 
 public class FollowMessage extends ClientToServerMessage {
 
@@ -19,7 +20,7 @@ public class FollowMessage extends ClientToServerMessage {
 
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String,UserSession> usernameToUserSession){
 
-        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+        UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
         UserSession userSessionToFollow=usernameToUserSession.get(usernameToFollow);
 
         if(
@@ -33,9 +34,7 @@ public class FollowMessage extends ClientToServerMessage {
                 return error();
 		}
 
-        currentUserSession.increaseFollowing();
         return ack('\0' + usernameToFollow);
-
     }
 
     

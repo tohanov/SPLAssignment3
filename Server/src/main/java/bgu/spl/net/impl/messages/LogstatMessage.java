@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
 
 public class LogstatMessage extends ClientToServerMessage {
      
@@ -47,7 +48,7 @@ public class LogstatMessage extends ClientToServerMessage {
     @Override
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
 
-        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+        UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
 
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
             return error();

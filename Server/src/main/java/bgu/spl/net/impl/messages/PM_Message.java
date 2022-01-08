@@ -2,9 +2,11 @@ package bgu.spl.net.impl.messages;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import bgu.spl.net.bidi.Connections;
 import bgu.spl.net.impl.UserSession;
+import bgu.spl.net.impl.ConnectionsImpl;
 
 
 public class PM_Message extends ClientToServerMessage {
@@ -13,16 +15,16 @@ public class PM_Message extends ClientToServerMessage {
     private String dateAndTime;
 
 	private static class FilteredWordsWrapper {
-		private static HashSet<String> filteredWords = new HashSet<>(
+		private static HashSet<String> filteredWords = new HashSet<String>(
 			Arrays.asList(
 				new String[] {
 					"war",
 					"kill",
 					"trump",
 					"murder",
-					"blood"
+					"blood",
 				}
-			)
+			).stream().map(String::toLowerCase).collect(Collectors.toSet())
 		);
 	}
 
@@ -36,7 +38,7 @@ public class PM_Message extends ClientToServerMessage {
     @Override
     public ServerToClientMessage act(int currentUserId, Connections<Message> connections, ConcurrentHashMap<String, UserSession> usernameToUserSession) {
         
-        UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
+        UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
 
         if(currentUserSession==null || !currentUserSession.isLoggedIn())
             return error();
@@ -51,7 +53,7 @@ public class PM_Message extends ClientToServerMessage {
         NotificationMessage wrappedMessage = new NotificationMessage(6,currentUserSession.getUsername(), messageToPost + ' ' + dateAndTime);
         
         if(targetUserSession.isLoggedIn())           //FIXME: concurrency: user logouts during sending
-            connections.getHandler(targetUserSession.getSessionId()).send(wrappedMessage); 
+			((ConnectionsImpl<Message>)connections).getHandler(targetUserSession.getSessionId()).send(wrappedMessage); 
         else{
          targetUserSession.getReceivedMessages().add(wrappedMessage);
         } 
