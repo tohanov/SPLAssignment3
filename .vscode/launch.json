@@ -6,13 +6,6 @@
 	"configurations": [
 		{
 			"type": "java",
-			"name": "Launch ReactorMain",
-			"request": "launch",
-			"mainClass": "bgu.spl.net.impl.BGSServer.ReactorMain",
-			"projectName": "spl-net"
-		},
-		{
-			"type": "java",
 			"name": "Launch TPCMain",
 			"request": "launch",
 			"mainClass": "bgu.spl.net.impl.BGSServer.TPCMain",

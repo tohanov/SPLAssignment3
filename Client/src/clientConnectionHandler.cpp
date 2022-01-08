@@ -57,7 +57,7 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 }
 
 bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
-	cout << "[*] inside sendBytes()" << endl;
+	// cout << "[*] inside sendBytes()" << endl;
     int tmp = 0;
     
 	boost::system::error_code error;
@@ -106,7 +106,7 @@ bool ConnectionHandler::sendLine(std::string& line) {
 
     int len = ptr_semicolon - ptr_Bytes + 1; // strchr(ptr_Bytes,';') - ptr_Bytes + 1;
 
-	cout << "[*] inside sendLine(), len=" << len << endl;
+	// cout << "[*] inside sendLine(), len=" << len << endl;
 
     bool connectionClosed = sendBytes(ptr_Bytes, len);
 

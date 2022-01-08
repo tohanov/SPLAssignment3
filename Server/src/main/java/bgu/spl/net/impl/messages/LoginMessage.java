@@ -3,6 +3,7 @@ package bgu.spl.net.impl.messages;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bgu.spl.net.bidi.Connections;
+import bgu.spl.net.impl.ConnectionHandlerImpl;
 import bgu.spl.net.impl.UserSession;
 
 public class LoginMessage extends ClientToServerMessage {
@@ -31,13 +32,21 @@ public class LoginMessage extends ClientToServerMessage {
         // else allow login
             // set the connection id of the user session of the given username to the one of the connection handler
             // 
-
+		
+		ConnectionHandlerImpl<Message> handler = connections.getHandler(currentUserId);
         UserSession userSession = usernameToUserSession.get(username);
-        if (userSession == null || captcha!=1 || !password.equals(userSession.getPassword()) || !userSession.setSessionId(currentUserId) ) {
+
+		if (
+			userSession == null // if no such user is registered
+			|| captcha != 1	//
+			|| !password.equals(userSession.getPassword()) // password doesn't match
+			|| handler.getUserSession() != null // if current connection is logged in as someone else already
+			|| !userSession.setSessionId(currentUserId) // if that user is already currently connected from another connection
+		) {
             return error();
         }
 
-		connections.getHandler(currentUserId).setUserSession(userSession);
+		handler.setUserSession(userSession);
         // connections.get(connectionId) //FIXME
 
         for(ServerToClientMessage unreadMessage : userSession.getReceivedMessages()){

@@ -29,7 +29,7 @@ void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid 
 
 		// int len = line.length();
 		transform(line.begin(), line.end(), line.begin(), ::tolower);
-		cout << "before sendline()" << std::endl;
+		// cout << "before sendline()" << std::endl;
 
 		// std::lock_guard<std::mutex> lock(mtx);
 
@@ -40,14 +40,14 @@ void readFromKeyboardTask::run() { // FIXME : make a normal function to get rid 
 			std::cout << "Disconnected. Exiting...\n" << std::endl;
 			break;
 		}
-		cout << "after sendline()" << std::endl;
+		// cout << "after sendline()" << std::endl;
 		// connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
 		// std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
 
 		while (logoutStage == LogoutStages::WAITING_FOR_ACK) {
 			cout << "[!!!] waiting for ack for logout" << endl;
 			// wait for 3 secs
-			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 
 	}

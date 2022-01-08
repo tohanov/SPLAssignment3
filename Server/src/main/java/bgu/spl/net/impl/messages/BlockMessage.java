@@ -18,12 +18,15 @@ public class BlockMessage extends ClientToServerMessage{
        
         UserSession currentUserSession = connections.getHandler(currentUserId).getUserSession();
 
-        if(currentUserSession==null || !currentUserSession.isLoggedIn())
+        if(currentUserSession==null /*|| !currentUserSession.isLoggedIn()*/)
             return error();
 
         UserSession userToBlock=usernameToUserSession.get(usernameToBlock); 
         
-        if(userToBlock==null || currentUserSession.isBlockingOtherUser(usernameToBlock))
+        if(
+			userToBlock==null // if user to block doesn't exist
+			|| currentUserSession.getUsername().equals(usernameToBlock) // can't block yourself
+			|| currentUserSession.isBlockingOtherUser(usernameToBlock)) // if already blocking that user
             return error();
 
         currentUserSession.blockUser(userToBlock);

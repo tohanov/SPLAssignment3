@@ -63,7 +63,7 @@ public class UserSession {
         return sessionId.get() != -1;
     }
 
-    public void resetSessionId(){   
+    public void resetSessionId() {   
         sessionId.set(-1);
     }
    
@@ -132,6 +132,8 @@ public class UserSession {
 
        blockedUsers.add(usernameToBlock);
        removeFollower(userSessionToBlock);
+	   
+       userSessionToBlock.blockedUsers.add(this.username);
        userSessionToBlock.removeFollower(this); 
               
     }

@@ -20,8 +20,8 @@ public class PM_Message extends ClientToServerMessage {
         this.dateAndTime=dateAndTime;
 
         filteredWords=new HashSet<>(); //TODO:add words
-        // filteredWords.add("war");
-        // filteredWords.add("kill");
+        filteredWords.add("war");
+        filteredWords.add("kill");
 
     }
 
@@ -40,7 +40,7 @@ public class PM_Message extends ClientToServerMessage {
         
         filterMessage();
 
-        NotificationMessage wrappedMessage = new NotificationMessage(6,currentUserSession.getUsername(),messageToPost);
+        NotificationMessage wrappedMessage = new NotificationMessage(6,currentUserSession.getUsername(), messageToPost + ' ' + dateAndTime);
         
         if(targetUserSession.isLoggedIn())           //FIXME: concurrency: user logouts during sending
             connections.getHandler(targetUserSession.getSessionId()).send(wrappedMessage); 

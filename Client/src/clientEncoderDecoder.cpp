@@ -67,7 +67,7 @@ template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 }
 
 template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) { //TODO: change to &string
-    std::cout << "[*] inside decodenextbyte" << std::endl;
+    // std::cout << "[*] inside decodenextbyte" << std::endl;
 
 	if (byte != ';') {
 		bytes.push_back(byte);
@@ -85,7 +85,7 @@ template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) { //TO
 
 
 template<> char* clientEncoderDecoder<string>::encode(string message){
-	std::cout << "[*] encode()" << std::endl;
+	// std::cout << "[*] encode()" << std::endl;
     string command;
     vector<char> outputVector;
     istringstream messageStream(message);
@@ -146,7 +146,7 @@ template<> char* clientEncoderDecoder<string>::encode(string message){
 
 
 string returnCompleteMessage() {
-	std::cout << "[*] returnCompleteMessage" << std::endl;
+	// std::cout << "[*] returnCompleteMessage" << std::endl;
 	short opCode = bytesToShort(bytes.data());
 
 	switch(opCode) {
@@ -161,7 +161,7 @@ string returnCompleteMessage() {
 
 
 string decodeAck() {
-	std::cout << "[*] decodeAck" << std::endl;
+	// std::cout << "[*] decodeAck" << std::endl;
 	string message = "ACK ";
 	short messageOpCode = bytesToShort(bytes.data() + 2); // opcode of message to which the ack is responding
 	
@@ -181,8 +181,9 @@ string decodeAck() {
 
 
 void parseFollowUnfollow(string &output) {
-	output += " " + to_string(bytesToShort(bytes.data() + 2)) + " "; // follow/unfollow 2 bytes
-	output += (bytes.data() + 4); // username
+	// 2 2 1 name
+	output += " " + to_string(bytes[4]) + " "; // follow/unfollow 1 byte
+	output += (bytes.data() + 5); // username
 }
 
 
@@ -224,7 +225,7 @@ string decodeNotification() {
 
 	message += bytes.data() + index; // posting user name
 	message += " ";
-	index += message.length() - tempLen;
+	index += message.length() - tempLen + 1;
 
 	message += bytes.data() + index;
 
@@ -260,7 +261,7 @@ void encodeRegister(istringstream& messageStream, vector<char> &outputVector){
 
 
 void encodeLogin(istringstream& messageStream, vector<char> &outputVector){
-	cout << "[*] inside encodeLogin()" << endl;
+	// cout << "[*] inside encodeLogin()" << endl;
     string username,password;
     int captcha;
  
@@ -296,7 +297,7 @@ void encodePost(istringstream& messageStream, vector<char> &outputVector){
 
 
 void encodePM(istringstream& messageStream, vector<char> &outputVector){
-	cout << "[*] inside encodePM()" << endl;
+	// cout << "[*] inside encodePM()" << endl;
     string username, content;
 
     messageStream >> username;

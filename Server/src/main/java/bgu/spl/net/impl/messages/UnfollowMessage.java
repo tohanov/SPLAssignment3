@@ -23,7 +23,7 @@ public class UnfollowMessage extends ClientToServerMessage{
             return error();
 
         //currentUserSession.decreaseFollowing();    
-        return ack(); 
+        return ack('\1' + usernameToUnfollow); 
 
     }
 }

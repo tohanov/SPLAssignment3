@@ -201,7 +201,7 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         byte[] postingUser=((NotificationMessage)message).getPostingUser().getBytes();
         byte[] content= ((NotificationMessage)message).getContent().getBytes();
         
-        int size= 5 + 1 + postingUser.length + content.length;
+        int size= 2 + 1 + postingUser.length + 1 + content.length + 1 + 1;
 		int index=0;
 
         byte[] output = new byte[size];
@@ -232,17 +232,18 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
 
         short messageOpCode = ((ServerToClientMessage) message).getMessageOpCode();
         
-        byte[] opCodeBytes = shortToBytes((short)10); 
-        byte[] messageOpCodeBytes = shortToBytes(messageOpCode);
+        byte[] opCodeBytes = shortToBytes((short)10); // Ack opcode
+        byte[] messageOpCodeBytes = shortToBytes(messageOpCode); // the opcode of the message the ack is responding to
         byte[] output;
 
-        if(messageOpCode == 4){  //follow
+        if(messageOpCode == 4){  // if responding to follow
             byte[] usernameBytes = (( (String) ((AckMessage) message).getInformation())).getBytes();
-            output = new byte[4 + usernameBytes.length];
-			// FIXME add follo/unfollow byte
+            output = new byte[2 + 2 + 1 + usernameBytes.length + 1]; // [ack opcode] [msg opcode] [follow/unfollow byte] [name]
+			
             System.arraycopy(opCodeBytes, 0, output, 0, 2);
             System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
-            System.arraycopy(usernameBytes, 0, output, 4, usernameBytes.length);
+			// FIXME check if nullbyte ruins string
+            System.arraycopy(usernameBytes, 0, output, 4 /* 5 */, usernameBytes.length);
 
         }
 

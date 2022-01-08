@@ -2,7 +2,14 @@ package bgu.spl.net.impl.messages;
 
 public class AckMessage extends ServerToClientMessage{
 
-    Object information;
+    Object information; //TODO remove
+	ClientToServerMessage respondingToMessage;
+
+	AckMessage(ClientToServerMessage message){ //FIXME get message object
+        super(message.opCode, 10);
+        
+    }
+
 
     AckMessage(int messageOpCode){ //FIXME get message object
         super(messageOpCode,10);
@@ -18,6 +25,10 @@ public class AckMessage extends ServerToClientMessage{
     public Object getInformation(){
         return information;
     }
+
+	public ClientToServerMessage getRespondingToMessage() {
+		return respondingToMessage;
+	}
 
 
     // AckMessage(int messageOpCode, ArrayList<UserStats> args){
