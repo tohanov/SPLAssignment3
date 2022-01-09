@@ -199,7 +199,7 @@ void parseFollowUnfollow(string &output) {
 void parseStatLogStat(string &output) {
 	output += " ";
 	
-	for (int index = 4; index < bytes.size() /* bytes[index] != ';' */; index += 8) {
+	for (size_t index = 4; index < bytes.size() /* bytes[index] != ';' */; index += 8) {
 		// cout << "[*] parseStatLogStat(), inside loop, index=" << index ;
 		// cout << ", byte=" << bytes[index] << endl;
 

@@ -3,14 +3,15 @@ executable_name:=BGSclient
 # compile_flags:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude -O3 -pthread
 # link_flags:=-lboost_system -lpthread -lstdc++ -lboost_thread 
 
-compile_flags:=-c -Iinclude -pthread -std=c++11 -O3 -Wall -Weffc++ -g
-link_flags:=-lboost_system -lboost_thread -lpthread
-object_files:=			bin/BGSclient.o \
-				bin/clientConnectionHandler.o \
-				bin/readFromKeyboardTask.o \
-				bin/readFromSocketTask.o \
-				bin/clientProtocol.o \
-				bin/clientEncoderDecoder.o
+compile_flags:=-c -Iinclude -std=c++11 -Wall -Weffc++ -g
+link_flags:=-lboost_thread -lboost_system -lpthread -lstdc++ -pthread -L/usr/lib/x86_64-linux-gnu
+object_files:=	\
+	bin/BGSclient.o \
+	bin/clientConnectionHandler.o \
+	bin/readFromKeyboardTask.o \
+	bin/readFromSocketTask.o \
+	bin/clientProtocol.o \
+	bin/clientEncoderDecoder.o
 
 
 # all: clear compile link
@@ -33,7 +34,7 @@ compile: client
 
 link: $(object_files)
 	echo "[*] Linking everything..."
-	g++ $(link_flags) -o bin/$(executable_name) $(object_files)
+	g++ $(link_flags) -o bin/$(executable_name) $(object_files) -lboost_system
 
 
 check: bin/studio ExampleInput.txt #TODO

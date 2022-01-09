@@ -4,6 +4,7 @@
 !.vscode/launch.json
 !.gitignore
 !tarCommands.sh
+!readme.txt
 
 !Client
 !Client/**
