@@ -34,7 +34,6 @@ short bytesToShort(char* bytesArr);
 // endregion Decoder functions
 
 
-
 enum OpCode {
     REGISTER = 1,
     LOGIN,
@@ -50,8 +49,10 @@ enum OpCode {
     BLOCK
 };
 
+
 unordered_map<string, int> commandToOpCode;
 vector<char> bytes;
+
 
 template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 	commandToOpCode["register"] = OpCode::REGISTER;
@@ -66,9 +67,9 @@ template<> clientEncoderDecoder<string>::clientEncoderDecoder() {
 	commandToOpCode["block"] = OpCode::BLOCK;
 }
 
+
 template<> string clientEncoderDecoder<string>::decodeNextByte(char byte) { //TODO: change to &string
     // std::cout << "[*] inside decodenextbyte" << std::endl;
-
 
 	if (byte != ';') {
 		bytes.push_back(byte);

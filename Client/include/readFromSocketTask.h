@@ -2,17 +2,15 @@
 #include <thread>
 #include <iostream>
 #include <mutex>
-#include "logoutStages.h"
 
 
 class readFromSocketTask {
 	private:
 		ConnectionHandler *ptr_connectionHandler;
-		std::mutex &mtx;
-		LogoutStages &logoutStage;
+		// std::mutex &mtx;
 
 	public:
-		readFromSocketTask(ConnectionHandler *_ptr_connectionHandler, std::mutex &_mtx, LogoutStages &logoutStage);
+		readFromSocketTask(ConnectionHandler *_ptr_connectionHandler/* , std::mutex &_mtx */);
 
 		~readFromSocketTask();
 

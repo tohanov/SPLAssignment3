@@ -46,7 +46,7 @@ public class ConnectionHandlerImpl<T> implements ConnectionHandler<T>, Runnable 
 
     @Override
     public void close() throws IOException {
-		connections.disconnect(id);
+		connections.disconnect(id); // removed from logged in users
         socket.close();
     }
 

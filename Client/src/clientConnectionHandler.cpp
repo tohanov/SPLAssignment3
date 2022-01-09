@@ -9,9 +9,9 @@ using std::cerr;
 using std::endl;
 using std::string;
 
-ConnectionHandler::ConnectionHandler(string host, short port) : 
-host_(host), port_(port), io_service_(), socket_(io_service_), encDec(), protocol()
-{
+ConnectionHandler::ConnectionHandler(string host, short port)
+	: host_(host), port_(port), io_service_(), socket_(io_service_),
+	encDec(), protocol(this), logoutStage(ClientProgramStages::LogoutStages::NOT_LOGGED_OUT) {
 }
 
 // ConnectionHandler::ConnectionHandler(ConnectionHandler &other) : socket_(other.socket_) {
@@ -76,7 +76,7 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
     return true;
 }
  
-bool ConnectionHandler::getLine(std::string& line) {
+bool ConnectionHandler::getLine(/* std::string& line */) {
     // return getFrameAscii(line, '\n');
     string decoded="";
     char ch;
@@ -92,18 +92,22 @@ bool ConnectionHandler::getLine(std::string& line) {
 		exit(-1); // FIXME : remove
         return false;
     }
+
     protocol.process(decoded);
 	// FIXME protocol call
-	line = decoded;
+	// line = decoded;
     return true;
 }
 
 bool ConnectionHandler::sendLine(std::string& line) {
     char *ptr_Bytes = encDec.encode(line);
+
+	setCommandStage(ClientProgramStages::MessageStages::WAITING_FOR_RESPONSE);
+
 	char *ptr_semicolon = ptr_Bytes;
-
-	while (*ptr_semicolon != ';') ++ptr_semicolon;
-
+	while (*ptr_semicolon != ';') {
+		++ptr_semicolon;
+	}
     int len = ptr_semicolon - ptr_Bytes + 1; // strchr(ptr_Bytes,';') - ptr_Bytes + 1;
 
 	// cout << "[*] inside sendLine(), len=" << len << endl;
@@ -149,5 +153,21 @@ void ConnectionHandler::close() {
 
 
 // bool ConnectionHandler::shouldTerminate() {
-// 	return should_terminate;
+// 	return protocol.shouldTerminate();
 // }
+
+ClientProgramStages::LogoutStages ConnectionHandler::getLogoutStage() {
+	return logoutStage;
+}
+
+void ConnectionHandler::setLogoutStage(ClientProgramStages::LogoutStages value) {
+	logoutStage = value;
+}
+
+ClientProgramStages::MessageStages ConnectionHandler::getCommandStage() {
+	return commandStage;
+}
+
+void ConnectionHandler::setCommandStage(ClientProgramStages::MessageStages value) {
+	commandStage = value;
+}

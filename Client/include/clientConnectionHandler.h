@@ -8,6 +8,7 @@
 
 #include "clientEncoderDecoder.h"
 #include "clientProtocol.h"
+#include "clientProgramStages.h"
 
 
 using boost::asio::ip::tcp;
@@ -22,7 +23,9 @@ class ConnectionHandler {
 		tcp::socket socket_; 
 		clientEncoderDecoder<string> encDec;
 		clientProtocol<string> protocol;
-		// bool should_terminate
+		ClientProgramStages::LogoutStages logoutStage;
+		ClientProgramStages::MessageStages commandStage;
+		// bool should_terminate;
 	
 	public:
 		ConnectionHandler(std::string host, short port);
@@ -41,7 +44,7 @@ class ConnectionHandler {
 		
 		// Read an ascii line from the server
 		// Returns false in case connection closed before a newline can be read.
-		bool getLine(std::string& line);
+		bool getLine(/* std::string& line */);
 		
 		// Send an ascii line from the server
 		// Returns false in case connection closed before all the data is sent.
@@ -59,6 +62,14 @@ class ConnectionHandler {
 		void close();
 
 		// bool shouldTerminate();
+
+		ClientProgramStages::LogoutStages getLogoutStage();
+
+		void setLogoutStage(ClientProgramStages::LogoutStages value);
+
+		ClientProgramStages::MessageStages getCommandStage();
+
+		void setCommandStage(ClientProgramStages::MessageStages value);
 }; //class ConnectionHandler
 
 

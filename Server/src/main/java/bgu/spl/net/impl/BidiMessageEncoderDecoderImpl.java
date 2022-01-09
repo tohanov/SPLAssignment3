@@ -248,13 +248,15 @@ public class BidiMessageEncoderDecoderImpl implements MessageEncoderDecoder<Mess
         byte[] output;
 
         if(messageOpCode == 4){  // if responding to follow
-            byte[] usernameBytes = (( (String) ((AckMessage) message).getInformation())).getBytes();
-            output = new byte[2 + 2 + 1 + usernameBytes.length + 1]; // [ack opcode] [msg opcode] [follow/unfollow byte] [name]
+            byte[] info = (( (String) ((AckMessage) message).getInformation())).getBytes();
+
+			// format: [ack opcode] [msg opcode] [follow/unfollow byte] [name]
+            output = new byte[2 + 2 + 1 + info.length + 1]; 
 			
             System.arraycopy(opCodeBytes, 0, output, 0, 2);
             System.arraycopy(messageOpCodeBytes, 0, output, 2, 2);
 			// FIXME check if nullbyte ruins string
-            System.arraycopy(usernameBytes, 0, output, 4 /* 5 */, usernameBytes.length);
+            System.arraycopy(info, 0, output, 4 /* 5 */, info.length);
 
         }
 

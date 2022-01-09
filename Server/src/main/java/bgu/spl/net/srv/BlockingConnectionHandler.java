@@ -51,6 +51,7 @@
 
 //     @Override
 //     public void close() throws IOException {
+//		 	connections.disconnect(handlerId); // removed from logged in users
 //         connected = false;
 //         sock.close();
 //     }

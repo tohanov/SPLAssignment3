@@ -17,7 +17,7 @@ public class ReactorMain {
         Server.reactor(
 			numOfThreads, 
 			port, 
-			() -> new BidiMessagingProtocolImpl(usernameToUserSession) ,  
+			() -> new BidiMessagingProtocolImpl(usernameToUserSession),
 			() ->  new BidiMessageEncoderDecoderImpl()
 		).serve();
     }
