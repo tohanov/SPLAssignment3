@@ -3,7 +3,7 @@
 !.vscode/
 !.vscode/launch.json
 !.gitignore
-
+!tarCommands.sh
 
 !Client
 !Client/**
@@ -13,4 +13,3 @@ Client/bin/**
 !Server
 !Server/**
 Server/target/**
-

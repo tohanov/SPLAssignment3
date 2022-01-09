@@ -1,14 +1,98 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>bgu.spl</groupId>
     <artifactId>spl-net</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <version>1.0</version>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <junit.version>4.12</junit.version>
     </properties>
-    <name>spl-net</name>
+
+    <dependencies>
+        <!-- <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency> -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+
+	    	<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+
+				<executions>
+					<execution>
+						<id>build-a</id>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>bgu.spl.net.impl.BGSServer.TPCMain</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							
+							<finalName>bgs_tpc</finalName>
+
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>build-b</id>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>bgu.spl.net.impl.BGSServer.ReactorMain</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							
+							<finalName>bgs_reactor</finalName>
+
+        					<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+            </plugin>
+			
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+        </plugins>
+    </build>
 </project>
