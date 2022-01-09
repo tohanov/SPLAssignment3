@@ -2,9 +2,10 @@ executable_name:=BGSclient
 
 # compile_flags:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude -O3 -pthread
 # link_flags:=-lboost_system -lpthread -lstdc++ -lboost_thread 
-compile_flags:=-c -Iinclude -pthread -std=c++11 #-O3 -Wall -Weffc++ -g # TODO
-link_flags:=-lboost_system -lboost_thread -lpthread -pthread
-object_files:=	bin/BGSclient.o \
+
+compile_flags:=-c -Iinclude -pthread -std=c++11 -O3 -Wall -Weffc++ -g
+link_flags:=-lboost_system -lboost_thread -lpthread
+object_files:=			bin/BGSclient.o \
 				bin/clientConnectionHandler.o \
 				bin/readFromKeyboardTask.o \
 				bin/readFromSocketTask.o \
@@ -12,8 +13,8 @@ object_files:=	bin/BGSclient.o \
 				bin/clientEncoderDecoder.o
 
 
-all: clear compile link
-# all: clear clean compile link
+# all: clear compile link
+all: clear clean compile link
 
 
 clear:
@@ -23,6 +24,7 @@ clear:
 clean:
 	echo "[*] Cleaning..."
 	rm -f bin/*
+	touch bin/.gitkeep
 
 
 compile: client

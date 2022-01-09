@@ -20,7 +20,11 @@ public class UnfollowMessage extends ClientToServerMessage{
         UserSession currentUserSession = ((ConnectionsImpl<Message>)connections).getHandler(currentUserId).getUserSession();
         UserSession userSessionToUnfollow=usernameToUserSession.get(usernameToUnfollow);
 
-        if(!currentUserSession.isLoggedIn() || userSessionToUnfollow==null || !userSessionToUnfollow.removeFollower(currentUserSession))
+        if(
+			currentUserSession == null // if not logged in
+			|| userSessionToUnfollow==null // if the requested user to follow doesn't exist
+			|| !userSessionToUnfollow.removeFollower(currentUserSession) // if wan't following the user from the get go
+		) 
             return error();
 
         //currentUserSession.decreaseFollowing();    
